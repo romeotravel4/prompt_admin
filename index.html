@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Romeo Travel</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        /* --- Estilos Globales (MODO OSCURO) --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #1c1c1e; /* Fondo oscuro */
+            color: #f0f0f0; /* Texto claro */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* --- 1. Vista de Login --- */
+        #login-view {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-container {
+            background-color: #2b2b31; /* Contenedor oscuro */
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .login-container h2 { margin-bottom: 2rem; font-weight: 600; color: #f0f0f0; }
+        .input-group { position: relative; margin-bottom: 1.5rem; }
+        .input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #888; }
+        .login-input { width: 100%; padding: 12px 15px 12px 45px; background-color: #1c1c1e; border: 1px solid #444; border-radius: 25px; color: #f0f0f0; font-size: 1rem; outline: none; transition: border-color 0.3s, box-shadow 0.3s; }
+        .login-input:focus { border-color: #507A8B; box-shadow: 0 0 10px 2px rgba(80, 122, 139, 0.4); }
+        .btn-login { width: 100%; border: none; border-radius: 25px; padding: 12px 25px; font-size: 1rem; font-weight: 600; color: #f0f0f0; cursor: pointer; background-color: #507A8B; box-shadow: 0 0 15px 3px rgba(80, 122, 139, 0.5); transition: all 0.3s ease; }
+        .btn-login:hover { opacity: 0.9; transform: scale(1.02); }
+        #login-error { color: #D32F2F; margin-top: 1rem; font-size: 0.9rem; min-height: 1.2em; }
+
+
+        /* --- 2. Vista de la App (Editor) --- */
+        #app-view {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .top-buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+            gap: 10px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 25px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #ffffff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Sombra modo oscuro */
+        }
+
+        .btn i {
+            font-size: 1.1rem;
+        }
+        
+        .btn-system {
+            background-color: #507A8B;
+            box-shadow: 0 0 15px 3px rgba(80, 122, 139, 0.5);
+            opacity: 0.6;
+        }
+        
+        .btn-developer {
+            background-color: #865A7C;
+            box-shadow: 0 0 15px 3px rgba(134, 90, 124, 0.5);
+            opacity: 0.6;
+        }
+
+        .btn.active {
+            opacity: 1;
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .button-separator {
+            width: 2px;
+            height: 25px;
+            background-color: #555; /* Separador en modo oscuro */
+            margin: 0 5px;
+            align-self: center;
+        }
+
+        .btn-edit-mode {
+            background-color: #e53935; /* Rojo Editar */
+        }
+
+        .btn-logout {
+            background-color: #6c757d;
+        }
+
+        /* Área del Editor */
+        .editor-area {
+            width: 100%;
+            background-color: #2b2b31;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        #prompt-editor {
+            width: 100%;
+            min-height: 500px;
+            background-color: transparent;
+            border: none;
+            color: #e0e0e0;
+            font-family: 'Menlo', 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            resize: vertical;
+            outline: none;
+        }
+
+        #prompt-editor[readonly] { color: #c7c7c7; cursor: not-allowed; }
+        .action-buttons { display: flex; justify-content: center; margin-top: 20px; }
+        .btn-action { width: 55px; height: 55px; border: none; border-radius: 50%; font-size: 1.4rem; color: white; cursor: pointer; margin: 0 10px; display: flex; justify-content: center; align-items: center; opacity: 0.7; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25); transition: opacity 0.3s ease, transform 0.3s ease; }
+        .btn-action:hover { opacity: 1; transform: scale(1.05); }
+        .btn-save { background-color: #388E3C; }
+        .btn-cancel { background-color: #D32F2F; }
+
+    </style>
+</head>
+<body>
+
+    <div id="login-view">
+        <div class="login-container">
+            <h2>Iniciar sesión</h2>
+            <form id="login-form">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="username" class="login-input" placeholder="Usuario" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" class="login-input" placeholder="Contraseña" required>
+                </div>
+                <button type="submit" class="btn-login" id="login-button">
+                    <i class="fas fa-sign-in-alt"></i>
+                </button>
+                <p id="login-error"></p>
+            </form>
+        </div>
+    </div>
+
+    <div id="app-view" class="hidden">
+
+		<div class="top-buttons">
+			<h1>Prompt Engineering</h1>
+        </div>
+        
+        <div class="top-buttons">
+            <button class="btn btn-system" id="btn-system" data-mode="system" title="Cargar System">
+				System
+            </button>
+            <button class="btn btn-developer" id="btn-developer" data-mode="developer" title="Cargar Developer">
+				Developer
+            </button>
+
+        </div>
+
+		<div class="top-buttons">
+			
+			<button class="btn btn-edit-mode" id="btn-edit" title="Editar">
+				<i class="fas fa-edit"></i>
+			</button>
+
+			<button class="btn btn-logout" id="btn-logout" title="Salir">
+				<i class="fas fa-sign-out-alt"></i>
+			</button>
+
+        </div>
+		
+        <div class="editor-area">
+            <textarea id="prompt-editor" spellcheck="false" readonly placeholder="Presiona 'System' o 'Developer' para cargar un prompt..."></textarea>
+        </div>
+
+        <div class="action-buttons hidden" id="edit-buttons">
+            <button class="btn-action btn-save" id="btn-save" aria-label="Guardar">
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            <button class="btn-action btn-cancel" id="btn-cancel" aria-label="Cancelar">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+    </div>
+
+
+    <script>
+        // --- CONSTANTES Y ESTADO ---
+        
+        // [CAMBIO] Nueva URL base de la API
+        const API_BASE_URL = "http://localhost:8000/api"; 
+        
+        let authToken = localStorage.getItem('authToken');
+        let originalContent = "";
+        let currentMode = 'system';
+
+        // --- REFERENCIAS AL DOM ---
+        const loginView = document.getElementById('login-view');
+        const appView = document.getElementById('app-view');
+        const loginForm = document.getElementById('login-form');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const loginError = document.getElementById('login-error');
+        const loginButton = document.getElementById('login-button');
+
+        const btnSystem = document.getElementById('btn-system');
+        const btnDeveloper = document.getElementById('btn-developer');
+
+        // (Botón 'btn-load' eliminado)
+        const btnEdit = document.getElementById('btn-edit');
+        const btnLogout = document.getElementById('btn-logout');
+        
+        const editor = document.getElementById('prompt-editor');
+        const editButtons = document.getElementById('edit-buttons');
+        const btnSave = document.getElementById('btn-save');
+        const btnCancel = document.getElementById('btn-cancel');
+
+        // --- LÓGICA DE LA APLICACIÓN ---
+
+        // 1. Iniciar Sesión (Login)
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            loginError.textContent = "";
+            loginButton.disabled = true;
+            loginButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Conectando...';
+
+            const username = usernameInput.value;
+            const password = passwordInput.value;
+            const bodyData = new URLSearchParams();
+            bodyData.append('username', username);
+            bodyData.append('password', password);
+
+            try {
+                // [CAMBIO] Apunta a /api/login
+                const response = await fetch(`${API_BASE_URL}/login/token`, {
+                    method: 'POST',
+                    body: bodyData 
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // [CAMBIO] Busca 'access_token'
+                    if (!data.access_token) {
+                         throw new Error("El servidor no devolvió un access_token.");
+                    }
+                    authToken = data.access_token;
+                    
+                    localStorage.setItem('authToken', authToken);
+                    showAppView();
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || "Usuario o contraseña incorrectos.");
+                }
+            } catch (error) {
+                console.error("Error de login:", error);
+                loginError.textContent = error.message;
+            } finally {
+                loginButton.disabled = false;
+                loginButton.innerHTML = '<i class="fas fa-sign-in-alt"></i>';
+            }
+        });
+
+        // 2. Cerrar Sesión (Logout)
+        btnLogout.addEventListener('click', () => {
+            authToken = null;
+            localStorage.removeItem('authToken');
+            editor.value = "";
+            originalContent = "";
+            showLoginView();
+        });
+
+        // [NUEVO] 2.5. Cargar Modo System
+        btnSystem.addEventListener('click', async () => {
+            currentMode = 'system';
+            btnSystem.classList.add('active');
+            btnDeveloper.classList.remove('active');
+            cancelEditMode();
+            await loadContent(currentMode); // Carga directa
+        });
+
+        // [NUEVO] 2.6. Cargar Modo Developer
+        btnDeveloper.addEventListener('click', async () => {
+            currentMode = 'developer';
+            btnDeveloper.classList.add('active');
+            btnSystem.classList.remove('active');
+            cancelEditMode();
+            await loadContent(currentMode); // Carga directa
+        });
+
+
+        // [NUEVO] 3. Función de Carga de Contenido (Refactorizada)
+        async function loadContent(mode) {
+            if (!authToken) {
+                alert("Sesión expirada.");
+                showLoginView();
+                return;
+            }
+            
+            editor.value = `Cargando contenido de ${mode}...`;
+            editor.readOnly = true;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/prompts?mode=${currentMode}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                if (response.ok) {
+					const data = await response.json();
+					console.log(data)
+                    editor.value = data.content;
+                } else if (response.status === 401) {
+                    alert("Sesión inválida o expirada.");
+                    showLoginView();
+                } else {
+                    throw new Error("No se pudo cargar el contenido.");
+                }
+            } catch (error) {
+                console.error("Error al cargar:", error);
+                editor.value = `Error: ${error.message}`;
+            }
+        }
+
+
+        // 4. Activar Modo Edición
+        btnEdit.addEventListener('click', () => {
+            if (!editor.value || editor.value.startsWith("Cargando") || editor.value.startsWith("Presiona")) {
+                alert("Primero carga un contenido para editar.");
+                return;
+            }
+            originalContent = editor.value;
+            editor.readOnly = false;
+            editor.focus();
+            editButtons.classList.remove('hidden');
+        });
+
+        // 5. Guardar Contenido
+        btnSave.addEventListener('click', async () => {
+            const newContent = editor.value;
+
+            try {
+                // [CAMBIO] Apunta a /api/prompts/ (para guardar con POST)
+                const response = await fetch(`${API_BASE_URL}/prompts/`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        type: currentMode, 
+                        content: newContent,
+                    })
+                });
+
+                if (response.ok) {
+                    originalContent = newContent;
+                    alert("¡Guardado correctamente!");
+                    cancelEditMode();
+                } else if (response.status === 401) {
+                    alert("Sesión inválida o expirada.");
+                    showLoginView();
+                } else {
+                    throw new Error("Error al guardar en el servidor.");
+                }
+            } catch (error) {
+                console.error("Error al guardar:", error);
+                alert(`Error: ${error.message}`);
+            }
+        });
+
+        // 6. Cancelar Edición
+        btnCancel.addEventListener('click', () => {
+            if (confirm("¿Descartar cambios no guardados?")) {
+                editor.value = originalContent;
+                cancelEditMode();
+            }
+        });
+
+
+        // --- FUNCIONES AUXILIARES ---
+        function showAppView() {
+            loginView.classList.add('hidden');
+            appView.classList.remove('hidden');
+            btnSystem.classList.add('active'); // System por defecto
+            btnDeveloper.classList.remove('active');
+            currentMode = 'system';
+            editor.value = "Presiona 'System' o 'Developer' para cargar un prompt...";
+        }
+
+        function showLoginView() {
+            appView.classList.add('hidden');
+            loginView.classList.remove('hidden');
+            usernameInput.value = "";
+            passwordInput.value = "";
+            loginError.textContent = "";
+        }
+
+        function cancelEditMode() {
+            editor.readOnly = true;
+            editButtons.classList.add('hidden');
+        }
+
+        // --- INICIALIZACIÓN ---
+        if (authToken) {
+            showAppView();
+        } else {
+            showLoginView();
+        }
+
+    </script>
+</body>
+</html>
