@@ -3,162 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Romeo Travel</title>
+    <title>Editor de Prompts Romeo</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        /* --- Estilos Globales (MODO OSCURO) --- */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
+        /* --- Estilos Globales (MODO CLARO - Estilo Romeo) --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #1c1c1e; /* Fondo oscuro */
-            color: #f0f0f0; /* Texto claro */
+            font-family: 'Poppins', sans-serif;
+            background-color: #f7f7f7;
+            color: #333333;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             padding: 2rem;
         }
+        .hidden { display: none !important; }
 
-        .hidden {
-            display: none !important;
+		.header-container {
+            display: flex; /* Alinea logo y texto */
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px; /* Espacio igual al de los botones */
+        }
+
+        .header-logo {
+            height: 32px; /* Ajusta el tamaño del logo */
+            margin-right: 12px; /* Espacio entre logo y texto */
+        }
+
+        .header-container h1 {
+            font-family: 'Poppins', sans-serif; /* Fuente Poppins */
+            font-size: 1.75rem; /* Tamaño del título */
+            font-weight: 600; /* Semi-negrita */
+            color: #333; /* Color de texto oscuro */
         }
 
         /* --- 1. Vista de Login --- */
-        #login-view {
-            width: 100%;
-            max-width: 400px;
-        }
-
+        #login-view { width: 100%; max-width: 400px; }
         .login-container {
-            background-color: #2b2b31; /* Contenedor oscuro */
-            padding: 2.5rem;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            text-align: center;
+            background-color: #ffffff; padding: 2.5rem; border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08); text-align: center;
         }
-
-        .login-container h2 { margin-bottom: 2rem; font-weight: 600; color: #f0f0f0; }
+        .login-container h2 { margin-bottom: 2rem; font-weight: 600; color: #222; }
         .input-group { position: relative; margin-bottom: 1.5rem; }
-        .input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #888; }
-        .login-input { width: 100%; padding: 12px 15px 12px 45px; background-color: #1c1c1e; border: 1px solid #444; border-radius: 25px; color: #f0f0f0; font-size: 1rem; outline: none; transition: border-color 0.3s, box-shadow 0.3s; }
-        .login-input:focus { border-color: #507A8B; box-shadow: 0 0 10px 2px rgba(80, 122, 139, 0.4); }
-        .btn-login { width: 100%; border: none; border-radius: 25px; padding: 12px 25px; font-size: 1rem; font-weight: 600; color: #f0f0f0; cursor: pointer; background-color: #507A8B; box-shadow: 0 0 15px 3px rgba(80, 122, 139, 0.5); transition: all 0.3s ease; }
-        .btn-login:hover { opacity: 0.9; transform: scale(1.02); }
+        .input-group i { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: #a0a0a0; font-size: 0.95rem; }
+        .login-input {
+            width: 100%; padding: 14px 18px 14px 50px; background-color: #f0f0f0;
+            border: none; border-radius: 12px; color: #333; font-size: 1rem;
+            outline: none; transition: background-color 0.3s, box-shadow 0.3s;
+        }
+        .login-input:focus { background-color: #e5e5e5; box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.4); }
+		.btn-login {
+					width: 100%;
+					border: none;
+					border-radius: 12px;
+					padding: 14px 25px;
+					font-size: 1.05rem;
+					font-weight: 600;
+					color: #ffffff;
+					cursor: pointer;
+					
+					/* --- CAMBIOS APLICADOS --- */
+					background-color: #FF8C00; /* Naranja de Romeo */
+					box-shadow: 0 5px 15px rgba(255, 140, 0, 0.4); /* Sombra naranja */
+					
+					transition: all 0.3s ease;
+				}
+        
+        .btn-login:hover {
+            /* Mantenemos el efecto hover, pero con el color naranja */
+            background-color: #e67e00; /* Un naranja un poco más oscuro */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 140, 0, 0.5);
+        }
         #login-error { color: #D32F2F; margin-top: 1rem; font-size: 0.9rem; min-height: 1.2em; }
 
-
         /* --- 2. Vista de la App (Editor) --- */
-        #app-view {
-            width: 100%;
-            max-width: 1200px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .top-buttons {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 25px;
-            gap: 10px;
-        }
-
+        #app-view { width: 100%; max-width: 1200px; display: flex; flex-direction: column; align-items: center; }
+        .top-buttons { display: flex; justify-content: center; flex-wrap: wrap; margin-bottom: 25px; gap: 12px; }
         .btn {
-            border: none;
-            border-radius: 25px;
-            padding: 10px 20px;
-            font-size: 1rem;
-            font-weight: 600;
-            color: #ffffff;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Sombra modo oscuro */
+            border: none; border-radius: 12px; padding: 12px 20px; font-size: 1rem;
+            font-weight: 500; color: #333; cursor: pointer; display: flex;
+            align-items: center; transition: all 0.3s ease;
+            background-color: #e0e0e0; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
         }
-
-        .btn i {
-            font-size: 1.1rem;
-        }
+        .btn i { margin-right: 8px; font-size: 1.05rem; color: #666; }
         
-        .btn-system {
-            background-color: #507A8B;
-            box-shadow: 0 0 15px 3px rgba(80, 122, 139, 0.5);
-            opacity: 0.6;
+        .btn-system, .btn-developer {
+            color: #ffffff; background-color: #cccccc; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
-        
-        .btn-developer {
-            background-color: #865A7C;
-            box-shadow: 0 0 15px 3px rgba(134, 90, 124, 0.5);
-            opacity: 0.6;
-        }
+        .btn-system i, .btn-developer i { color: #ffffff; }
 
         .btn.active {
-            opacity: 1;
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            background-color: #FF8C00; /* Naranja de Romeo */
+            color: #ffffff; font-weight: 600; transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(255, 140, 0, 0.4);
         }
+        .btn.active i { color: #ffffff; }
 
         .button-separator {
-            width: 2px;
-            height: 25px;
-            background-color: #555; /* Separador en modo oscuro */
-            margin: 0 5px;
-            align-self: center;
+            width: 1px; height: 30px; background-color: #e0e0e0;
+            margin: 0 8px; align-self: center;
         }
 
         .btn-edit-mode {
-            background-color: #e53935; /* Rojo Editar */
+            background-color: #5485ED; color: #ffffff;
+            box-shadow: 0 4px 15px rgba(84, 133, 237, 0.4);
         }
+        .btn-edit-mode i { color: #ffffff; }
+        .btn-edit-mode:hover { background-color: #4a7ae0; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(84, 133, 237, 0.5); }
 
-        .btn-logout {
-            background-color: #6c757d;
+        .btn-logout { background-color: #f0f0f0; color: #555; }
+        .btn-logout i { color: #555; }
+        .btn-logout:hover { background-color: #e5e5e5; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
+
+        /* --- [NUEVO] Estilos para los botones de Guardar/Cancelar superiores --- */
+        .btn-save-top {
+            background-color: #4CAF50; /* Verde */
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
         }
+        .btn-save-top i { color: #ffffff; }
+        .btn-save-top:hover { background-color: #45a049; transform: translateY(-2px); }
 
-        /* Área del Editor */
+        .btn-cancel-top {
+            background-color: #F44336; /* Rojo */
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.4);
+        }
+        .btn-cancel-top i { color: #ffffff; }
+        .btn-cancel-top:hover { background-color: #e53935; transform: translateY(-2px); }
+
+
+        /* --- Área del Editor --- */
         .editor-area {
-            width: 100%;
-            background-color: #2b2b31;
-            border-radius: 12px;
-            padding: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            width: 100%; background-color: #ffffff; border-radius: 20px;
+            padding: 20px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
         }
-
         #prompt-editor {
-            width: 100%;
-            min-height: 500px;
-            background-color: transparent;
-            border: none;
-            color: #e0e0e0;
-            font-family: 'Menlo', 'Courier New', Courier, monospace;
-            font-size: 0.9rem;
-            line-height: 1.6;
-            resize: vertical;
-            outline: none;
+            width: 100%; min-height: 600px; background-color: transparent;
+            border: none; color: #333333; font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem; line-height: 1.7; resize: vertical; outline: none;
         }
-
-        #prompt-editor[readonly] { color: #c7c7c7; cursor: not-allowed; }
-        .action-buttons { display: flex; justify-content: center; margin-top: 20px; }
-        .btn-action { width: 55px; height: 55px; border: none; border-radius: 50%; font-size: 1.4rem; color: white; cursor: pointer; margin: 0 10px; display: flex; justify-content: center; align-items: center; opacity: 0.7; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25); transition: opacity 0.3s ease, transform 0.3s ease; }
-        .btn-action:hover { opacity: 1; transform: scale(1.05); }
-        .btn-save { background-color: #388E3C; }
-        .btn-cancel { background-color: #D32F2F; }
-
+        #prompt-editor[readonly] { color: #888888; cursor: default; }
+        
     </style>
 </head>
 <body>
 
     <div id="login-view">
         <div class="login-container">
-            <h2>Iniciar sesión</h2>
+            <img src="./logo.png" alt="Romeo Logo" width="120px" style="margin-bottom: 15px;"">
             <form id="login-form">
                 <div class="input-group">
                     <i class="fas fa-user"></i>
@@ -169,7 +168,7 @@
                     <input type="password" id="password" class="login-input" placeholder="Contraseña" required>
                 </div>
                 <button type="submit" class="btn-login" id="login-button">
-                    <i class="fas fa-sign-in-alt"></i>
+                    <i class="fas fa-sign-in-alt" style="margin-right: 8px;"></i>
                 </button>
                 <p id="login-error"></p>
             </form>
@@ -178,54 +177,52 @@
 
     <div id="app-view" class="hidden">
 
-		<div class="top-buttons">
-			<h1>Prompt Engineering</h1>
+		<div class="header-container">
+			<div>
+				<img src="./logo.png" alt="Romeo Logo" class="header-logo">
+			</div>
+			<h1>Prompt Admin</h1>
         </div>
         
+
         <div class="top-buttons">
-            <button class="btn btn-system" id="btn-system" data-mode="system" title="Cargar System">
-				System
+            
+            <button class="btn btn-system" id="btn-system" data-mode="system" title="Prompt System">
+                <i class="fas fa-cog"></i> System
             </button>
-            <button class="btn btn-developer" id="btn-developer" data-mode="developer" title="Cargar Developer">
-				Developer
+            <button class="btn btn-developer" id="btn-developer" data-mode="developer" title="Prompt Developer">
+                <i class="fas fa-code"></i> Developer
             </button>
 
+            <span class="button-separator"></span>
+
+            <button class="btn btn-edit-mode" id="btn-edit" title="Editar Prompt">
+                <i class="fas fa-edit"></i> Editar
+            </button>
+
+            <button class="btn btn-save-top hidden" id="btn-save-top" title="Guardar Cambios">
+                <i class="fas fa-check"></i> Guardar
+            </button>
+            <button class="btn btn-cancel-top hidden" id="btn-cancel-top" title="Cancelar Edición">
+                <i class="fas fa-times"></i> Cancelar
+            </button>
+
+            <button class="btn btn-logout" id="btn-logout" title="Cerrar Sesión">
+                <i class="fas fa-sign-out-alt"></i> Salir
+            </button>
         </div>
 
-		<div class="top-buttons">
-			
-			<button class="btn btn-edit-mode" id="btn-edit" title="Editar">
-				<i class="fas fa-edit"></i>
-			</button>
 
-			<button class="btn btn-logout" id="btn-logout" title="Salir">
-				<i class="fas fa-sign-out-alt"></i>
-			</button>
-
-        </div>
-		
         <div class="editor-area">
             <textarea id="prompt-editor" spellcheck="false" readonly placeholder="Presiona 'System' o 'Developer' para cargar un prompt..."></textarea>
         </div>
 
-        <div class="action-buttons hidden" id="edit-buttons">
-            <button class="btn-action btn-save" id="btn-save" aria-label="Guardar">
-                <i class="fas fa-arrow-up"></i>
-            </button>
-            <button class="btn-action btn-cancel" id="btn-cancel" aria-label="Cancelar">
-                <i class="fas fa-times"></i>
-            </button>
         </div>
-
-    </div>
 
 
     <script>
         // --- CONSTANTES Y ESTADO ---
-        
-        // [CAMBIO] Nueva URL base de la API
         const API_BASE_URL = "http://localhost:8000/api"; 
-        
         let authToken = localStorage.getItem('authToken');
         let originalContent = "";
         let currentMode = 'system';
@@ -242,14 +239,19 @@
         const btnSystem = document.getElementById('btn-system');
         const btnDeveloper = document.getElementById('btn-developer');
 
-        // (Botón 'btn-load' eliminado)
         const btnEdit = document.getElementById('btn-edit');
         const btnLogout = document.getElementById('btn-logout');
         
         const editor = document.getElementById('prompt-editor');
-        const editButtons = document.getElementById('edit-buttons');
-        const btnSave = document.getElementById('btn-save');
-        const btnCancel = document.getElementById('btn-cancel');
+        
+        // [NUEVO] Referencias a los botones superiores de guardar/cancelar
+        const btnSaveTop = document.getElementById('btn-save-top');
+        const btnCancelTop = document.getElementById('btn-cancel-top');
+        
+        // [ELIMINADO] Referencias a los botones inferiores
+        // const editButtons = document.getElementById('edit-buttons');
+        // const btnSave = document.getElementById('btn-save');
+        // const btnCancel = document.getElementById('btn-cancel');
 
         // --- LÓGICA DE LA APLICACIÓN ---
 
@@ -267,21 +269,18 @@
             bodyData.append('password', password);
 
             try {
-                // [CAMBIO] Apunta a /api/login
-                const response = await fetch(`${API_BASE_URL}/login/token`, {
+                // [CAMBIO] Asegúrate que la URL de login es correcta (ej. /login/token)
+                const response = await fetch(`${API_BASE_URL}/login/token`, { 
                     method: 'POST',
                     body: bodyData 
                 });
 
                 if (response.ok) {
                     const data = await response.json();
-                    
-                    // [CAMBIO] Busca 'access_token'
                     if (!data.access_token) {
                          throw new Error("El servidor no devolvió un access_token.");
                     }
                     authToken = data.access_token;
-                    
                     localStorage.setItem('authToken', authToken);
                     showAppView();
                 } else {
@@ -293,11 +292,11 @@
                 loginError.textContent = error.message;
             } finally {
                 loginButton.disabled = false;
-                loginButton.innerHTML = '<i class="fas fa-sign-in-alt"></i>';
+                loginButton.innerHTML = '<i class="fas fa-sign-in-alt" style="margin-right: 8px;"></i> Acceder';
             }
         });
 
-        // 2. Cerrar Sesión (Logout)
+        // 2. Cerrar Sesión (Logout) - Sin cambios
         btnLogout.addEventListener('click', () => {
             authToken = null;
             localStorage.removeItem('authToken');
@@ -306,46 +305,39 @@
             showLoginView();
         });
 
-        // [NUEVO] 2.5. Cargar Modo System
+        // 2.5. Cargar Modo System
         btnSystem.addEventListener('click', async () => {
             currentMode = 'system';
-            btnSystem.classList.add('active');
-            btnDeveloper.classList.remove('active');
-            cancelEditMode();
-            await loadContent(currentMode); // Carga directa
+            updateModeButtons();
+            cancelEditMode(); // Llama a la nueva función
+            await loadContent(currentMode);
         });
 
-        // [NUEVO] 2.6. Cargar Modo Developer
+        // 2.6. Cargar Modo Developer
         btnDeveloper.addEventListener('click', async () => {
             currentMode = 'developer';
-            btnDeveloper.classList.add('active');
-            btnSystem.classList.remove('active');
-            cancelEditMode();
-            await loadContent(currentMode); // Carga directa
+            updateModeButtons();
+            cancelEditMode(); // Llama a la nueva función
+            await loadContent(currentMode);
         });
 
 
-        // [NUEVO] 3. Función de Carga de Contenido (Refactorizada)
+        // 3. Función de Carga de Contenido - Sin cambios
         async function loadContent(mode) {
             if (!authToken) {
                 alert("Sesión expirada.");
                 showLoginView();
                 return;
             }
-            
             editor.value = `Cargando contenido de ${mode}...`;
             editor.readOnly = true;
-
             try {
-                const response = await fetch(`${API_BASE_URL}/prompts?mode=${currentMode}`, {
+                const response = await fetch(`${API_BASE_URL}/prompts/?mode=${mode}`, {
                     method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`
-                    }
+                    headers: { 'Authorization': `Bearer ${authToken}` }
                 });
                 if (response.ok) {
-					const data = await response.json();
-					console.log(data)
+                    const data = await response.json();
                     editor.value = data.content;
                 } else if (response.status === 401) {
                     alert("Sesión inválida o expirada.");
@@ -360,7 +352,7 @@
         }
 
 
-        // 4. Activar Modo Edición
+        // [MODIFICADO] 4. Activar Modo Edición
         btnEdit.addEventListener('click', () => {
             if (!editor.value || editor.value.startsWith("Cargando") || editor.value.startsWith("Presiona")) {
                 alert("Primero carga un contenido para editar.");
@@ -369,15 +361,17 @@
             originalContent = editor.value;
             editor.readOnly = false;
             editor.focus();
-            editButtons.classList.remove('hidden');
+            
+            // Oculta 'Editar', muestra 'Guardar' y 'Cancelar'
+            btnEdit.classList.add('hidden');
+            btnSaveTop.classList.remove('hidden');
+            btnCancelTop.classList.remove('hidden');
         });
 
-        // 5. Guardar Contenido
-        btnSave.addEventListener('click', async () => {
+        // [MODIFICADO] 5. Guardar Contenido (ahora usa btnSaveTop)
+        btnSaveTop.addEventListener('click', async () => {
             const newContent = editor.value;
-
             try {
-                // [CAMBIO] Apunta a /api/prompts/ (para guardar con POST)
                 const response = await fetch(`${API_BASE_URL}/prompts/`, {
                     method: 'POST',
                     headers: {
@@ -385,15 +379,15 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({ 
-                        type: currentMode, 
-                        content: newContent,
+                        type: currentMode, // Asegúrate que el backend espera 'type' o 'mode'
+                        content: newContent
                     })
                 });
 
                 if (response.ok) {
                     originalContent = newContent;
                     alert("¡Guardado correctamente!");
-                    cancelEditMode();
+                    cancelEditMode(); // Llama a la nueva función
                 } else if (response.status === 401) {
                     alert("Sesión inválida o expirada.");
                     showLoginView();
@@ -406,11 +400,11 @@
             }
         });
 
-        // 6. Cancelar Edición
-        btnCancel.addEventListener('click', () => {
+        // [MODIFICADO] 6. Cancelar Edición (ahora usa btnCancelTop)
+        btnCancelTop.addEventListener('click', () => {
             if (confirm("¿Descartar cambios no guardados?")) {
                 editor.value = originalContent;
-                cancelEditMode();
+                cancelEditMode(); // Llama a la nueva función
             }
         });
 
@@ -419,9 +413,8 @@
         function showAppView() {
             loginView.classList.add('hidden');
             appView.classList.remove('hidden');
-            btnSystem.classList.add('active'); // System por defecto
-            btnDeveloper.classList.remove('active');
             currentMode = 'system';
+            updateModeButtons();
             editor.value = "Presiona 'System' o 'Developer' para cargar un prompt...";
         }
 
@@ -433,9 +426,24 @@
             loginError.textContent = "";
         }
 
+        // [MODIFICADO] cancelEditMode ahora controla los botones superiores
         function cancelEditMode() {
             editor.readOnly = true;
-            editButtons.classList.add('hidden');
+            
+            // Oculta 'Guardar' y 'Cancelar', muestra 'Editar'
+            btnEdit.classList.remove('hidden');
+            btnSaveTop.classList.add('hidden');
+            btnCancelTop.classList.add('hidden');
+        }
+
+        function updateModeButtons() {
+            if (currentMode === 'system') {
+                btnSystem.classList.add('active');
+                btnDeveloper.classList.remove('active');
+            } else {
+                btnDeveloper.classList.add('active');
+                btnSystem.classList.remove('active');
+            }
         }
 
         // --- INICIALIZACIÓN ---
