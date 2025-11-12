@@ -193,10 +193,10 @@
             const devHosts = ["localhost", "127.0.0.1", "127.0.0.1:5500"]; 
             
             if (devHosts.some(host => window.location.hostname.includes(host))) {
-                console.log("Modo: Desarrollo (API Local)");
+                console.log("DEV");
                 return "http://localhost:8000/api"; 
             } else {
-                console.log("Modo: Producción (API Pública)");
+                console.log("PROD");
                 return "https://api.romeotravel.me/api"; 
             }
         }
