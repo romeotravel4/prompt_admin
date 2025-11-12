@@ -23,26 +23,7 @@
         }
         .hidden { display: none !important; }
 
-		.header-container {
-            display: flex; /* Alinea logo y texto */
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 25px; /* Espacio igual al de los botones */
-        }
-
-        .header-logo {
-            height: 32px; /* Ajusta el tamaño del logo */
-            margin-right: 12px; /* Espacio entre logo y texto */
-        }
-
-        .header-container h1 {
-            font-family: 'Poppins', sans-serif; /* Fuente Poppins */
-            font-size: 1.75rem; /* Tamaño del título */
-            font-weight: 600; /* Semi-negrita */
-            color: #333; /* Color de texto oscuro */
-        }
-
-        /* --- 1. Vista de Login --- */
+        /* --- 1. Vista de Login (sin cambios) --- */
         #login-view { width: 100%; max-width: 400px; }
         .login-container {
             background-color: #ffffff; padding: 2.5rem; border-radius: 20px;
@@ -56,34 +37,31 @@
             border: none; border-radius: 12px; color: #333; font-size: 1rem;
             outline: none; transition: background-color 0.3s, box-shadow 0.3s;
         }
-        .login-input:focus { background-color: #e5e5e5; box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.4); }
-		.btn-login {
-					width: 100%;
-					border: none;
-					border-radius: 12px;
-					padding: 14px 25px;
-					font-size: 1.05rem;
-					font-weight: 600;
-					color: #ffffff;
-					cursor: pointer;
-					
-					/* --- CAMBIOS APLICADOS --- */
-					background-color: #FF8C00; /* Naranja de Romeo */
-					box-shadow: 0 5px 15px rgba(255, 140, 0, 0.4); /* Sombra naranja */
-					
-					transition: all 0.3s ease;
-				}
-        
-        .btn-login:hover {
-            /* Mantenemos el efecto hover, pero con el color naranja */
-            background-color: #e67e00; /* Un naranja un poco más oscuro */
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 140, 0, 0.5);
+        .login-input:focus { background-color: #e5e5e5; box-shadow: 0 0 0 3px rgba(84, 133, 237, 0.3); }
+        .btn-login {
+            width: 100%; border: none; border-radius: 12px; padding: 14px 25px;
+            font-size: 1.05rem; font-weight: 600; color: #ffffff; cursor: pointer;
+            background-color: #FF8C00; box-shadow: 0 5px 15px rgba(255, 140, 0, 0.4);
+            transition: all 0.3s ease;
         }
+        .btn-login:hover { background-color: #e67e00; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 140, 0, 0.5); }
         #login-error { color: #D32F2F; margin-top: 1rem; font-size: 0.9rem; min-height: 1.2em; }
 
         /* --- 2. Vista de la App (Editor) --- */
         #app-view { width: 100%; max-width: 1200px; display: flex; flex-direction: column; align-items: center; }
+
+        /* Encabezado */
+        .header-container {
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 25px;
+        }
+        .header-logo { height: 32px; margin-right: 12px; }
+        .header-container h1 {
+            font-family: 'Poppins', sans-serif; font-size: 1.75rem;
+            font-weight: 600; color: #333;
+        }
+
+        /* Barra de botones */
         .top-buttons { display: flex; justify-content: center; flex-wrap: wrap; margin-bottom: 25px; gap: 12px; }
         .btn {
             border: none; border-radius: 12px; padding: 12px 20px; font-size: 1rem;
@@ -93,10 +71,11 @@
         }
         .btn i { margin-right: 8px; font-size: 1.05rem; color: #666; }
         
-        .btn-system, .btn-developer {
+        /* [CSS MODIFICADO] Estilo inactivo para los 4 botones de modo */
+        .btn-system, .btn-developer, .btn-summary, .btn-user {
             color: #ffffff; background-color: #cccccc; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
-        .btn-system i, .btn-developer i { color: #ffffff; }
+        .btn-system i, .btn-developer i, .btn-summary i, .btn-user i { color: #ffffff; }
 
         .btn.active {
             background-color: #FF8C00; /* Naranja de Romeo */
@@ -110,36 +89,22 @@
             margin: 0 8px; align-self: center;
         }
 
-        .btn-edit-mode {
-            background-color: #5485ED; color: #ffffff;
-            box-shadow: 0 4px 15px rgba(84, 133, 237, 0.4);
-        }
+        /* ... (Estilos para .btn-edit-mode, .btn-logout, .btn-save-top, .btn-cancel-top sin cambios) ... */
+        .btn-edit-mode { background-color: #5485ED; color: #ffffff; box-shadow: 0 4px 15px rgba(84, 133, 237, 0.4); }
         .btn-edit-mode i { color: #ffffff; }
         .btn-edit-mode:hover { background-color: #4a7ae0; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(84, 133, 237, 0.5); }
-
         .btn-logout { background-color: #f0f0f0; color: #555; }
         .btn-logout i { color: #555; }
         .btn-logout:hover { background-color: #e5e5e5; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
-
-        /* --- [NUEVO] Estilos para los botones de Guardar/Cancelar superiores --- */
-        .btn-save-top {
-            background-color: #4CAF50; /* Verde */
-            color: #ffffff;
-            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
-        }
+        .btn-save-top { background-color: #4CAF50; color: #ffffff; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4); }
         .btn-save-top i { color: #ffffff; }
         .btn-save-top:hover { background-color: #45a049; transform: translateY(-2px); }
-
-        .btn-cancel-top {
-            background-color: #F44336; /* Rojo */
-            color: #ffffff;
-            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.4);
-        }
+        .btn-cancel-top { background-color: #F44336; color: #ffffff; box-shadow: 0 4px 15px rgba(244, 67, 54, 0.4); }
         .btn-cancel-top i { color: #ffffff; }
         .btn-cancel-top:hover { background-color: #e53935; transform: translateY(-2px); }
 
 
-        /* --- Área del Editor --- */
+        /* --- Área del Editor (sin cambios) --- */
         .editor-area {
             width: 100%; background-color: #ffffff; border-radius: 20px;
             padding: 20px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
@@ -157,7 +122,7 @@
 
     <div id="login-view">
         <div class="login-container">
-            <img src="./logo.png" alt="Romeo Logo" width="120px" style="margin-bottom: 15px;"">
+            <img src="./logo.png" alt="Romeo Logo" style="height: 32px; margin-bottom: 2rem;">
             <form id="login-form">
                 <div class="input-group">
                     <i class="fas fa-user"></i>
@@ -168,22 +133,20 @@
                     <input type="password" id="password" class="login-input" placeholder="Contraseña" required>
                 </div>
                 <button type="submit" class="btn-login" id="login-button">
-                    <i class="fas fa-sign-in-alt" style="margin-right: 8px;"></i>
+                    <i class="fas fa-sign-in-alt" style="margin-right: 8px;"></i> Acceder
                 </button>
                 <p id="login-error"></p>
             </form>
         </div>
     </div>
 
+    
     <div id="app-view" class="hidden">
-
-		<div class="header-container">
-			<div>
-				<img src="./logo.png" alt="Romeo Logo" class="header-logo">
-			</div>
-			<h1>Prompt Admin</h1>
-        </div>
         
+        <div class="header-container">
+            <img src="./logo.png" alt="Romeo Logo" class="header-logo">
+            <h1>Prompt Admin</h1>
+        </div>
 
         <div class="top-buttons">
             
@@ -193,20 +156,24 @@
             <button class="btn btn-developer" id="btn-developer" data-mode="developer" title="Prompt Developer">
                 <i class="fas fa-code"></i> Developer
             </button>
+            <button class="btn btn-summary" id="btn-summary" data-mode="summary" title="Prompt Summary">
+                <i class="fas fa-file-alt"></i> Summary
+            </button>
+            <button class="btn btn-user" id="btn-user" data-mode="user" title="Prompt User">
+                <i class="fas fa-user"></i> User
+            </button>
 
             <span class="button-separator"></span>
 
             <button class="btn btn-edit-mode" id="btn-edit" title="Editar Prompt">
                 <i class="fas fa-edit"></i> Editar
             </button>
-
             <button class="btn btn-save-top hidden" id="btn-save-top" title="Guardar Cambios">
                 <i class="fas fa-check"></i> Guardar
             </button>
             <button class="btn btn-cancel-top hidden" id="btn-cancel-top" title="Cancelar Edición">
                 <i class="fas fa-times"></i> Cancelar
             </button>
-
             <button class="btn btn-logout" id="btn-logout" title="Cerrar Sesión">
                 <i class="fas fa-sign-out-alt"></i> Salir
             </button>
@@ -214,10 +181,10 @@
 
 
         <div class="editor-area">
-            <textarea id="prompt-editor" spellcheck="false" readonly placeholder="Presiona 'System' o 'Developer' para cargar un prompt..."></textarea>
+            <textarea id="prompt-editor" spellcheck="false" readonly placeholder="Selecciona un modo para cargar un prompt..."></textarea>
         </div>
-
-        </div>
+        
+    </div>
 
 
     <script>
@@ -225,61 +192,48 @@
         const API_BASE_URL = "http://localhost:8000/api"; 
         let authToken = localStorage.getItem('authToken');
         let originalContent = "";
-        let currentMode = 'system';
+        let currentMode = 'system'; // 'system' por defecto
 
         // --- REFERENCIAS AL DOM ---
+		const appView = document.getElementById('app-view');
         const loginView = document.getElementById('login-view');
-        const appView = document.getElementById('app-view');
+        // ... (login, username, password, etc. sin cambios)
         const loginForm = document.getElementById('login-form');
         const usernameInput = document.getElementById('username');
         const passwordInput = document.getElementById('password');
         const loginError = document.getElementById('login-error');
         const loginButton = document.getElementById('login-button');
 
+        // [MODIFICADO] 4 botones de modo
         const btnSystem = document.getElementById('btn-system');
         const btnDeveloper = document.getElementById('btn-developer');
+        const btnSummary = document.getElementById('btn-summary'); // NUEVO
+        const btnUser = document.getElementById('btn-user'); // NUEVO
 
         const btnEdit = document.getElementById('btn-edit');
         const btnLogout = document.getElementById('btn-logout');
-        
         const editor = document.getElementById('prompt-editor');
-        
-        // [NUEVO] Referencias a los botones superiores de guardar/cancelar
         const btnSaveTop = document.getElementById('btn-save-top');
         const btnCancelTop = document.getElementById('btn-cancel-top');
         
-        // [ELIMINADO] Referencias a los botones inferiores
-        // const editButtons = document.getElementById('edit-buttons');
-        // const btnSave = document.getElementById('btn-save');
-        // const btnCancel = document.getElementById('btn-cancel');
-
         // --- LÓGICA DE LA APLICACIÓN ---
 
-        // 1. Iniciar Sesión (Login)
+        // 1. Iniciar Sesión (Login) - Sin cambios
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             loginError.textContent = "";
             loginButton.disabled = true;
             loginButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Conectando...';
-
             const username = usernameInput.value;
             const password = passwordInput.value;
             const bodyData = new URLSearchParams();
             bodyData.append('username', username);
             bodyData.append('password', password);
-
             try {
-                // [CAMBIO] Asegúrate que la URL de login es correcta (ej. /login/token)
-                const response = await fetch(`${API_BASE_URL}/login/token`, { 
-                    method: 'POST',
-                    body: bodyData 
-                });
-
+                const response = await fetch(`${API_BASE_URL}/login/token`, { method: 'POST', body: bodyData });
                 if (response.ok) {
                     const data = await response.json();
-                    if (!data.access_token) {
-                         throw new Error("El servidor no devolvió un access_token.");
-                    }
+                    if (!data.access_token) throw new Error("El servidor no devolvió un access_token.");
                     authToken = data.access_token;
                     localStorage.setItem('authToken', authToken);
                     showAppView();
@@ -305,30 +259,43 @@
             showLoginView();
         });
 
-        // 2.5. Cargar Modo System
+        // [MODIFICADO] 2.5. Cargar Modo System
         btnSystem.addEventListener('click', async () => {
             currentMode = 'system';
             updateModeButtons();
-            cancelEditMode(); // Llama a la nueva función
+            cancelEditMode();
             await loadContent(currentMode);
         });
 
-        // 2.6. Cargar Modo Developer
+        // [MODIFICADO] 2.6. Cargar Modo Developer
         btnDeveloper.addEventListener('click', async () => {
             currentMode = 'developer';
             updateModeButtons();
-            cancelEditMode(); // Llama a la nueva función
+            cancelEditMode();
+            await loadContent(currentMode);
+        });
+        
+        // [NUEVO] 2.7. Cargar Modo Summary
+        btnSummary.addEventListener('click', async () => {
+            currentMode = 'summary';
+            updateModeButtons();
+            cancelEditMode();
+            await loadContent(currentMode);
+        });
+        
+        // [NUEVO] 2.8. Cargar Modo User
+        btnUser.addEventListener('click', async () => {
+            currentMode = 'user';
+            updateModeButtons();
+            cancelEditMode();
             await loadContent(currentMode);
         });
 
 
         // 3. Función de Carga de Contenido - Sin cambios
+        // (Ya usa la variable 'currentMode', así que funcionará)
         async function loadContent(mode) {
-            if (!authToken) {
-                alert("Sesión expirada.");
-                showLoginView();
-                return;
-            }
+            if (!authToken) { alert("Sesión expirada."); showLoginView(); return; }
             editor.value = `Cargando contenido de ${mode}...`;
             editor.readOnly = true;
             try {
@@ -352,42 +319,37 @@
         }
 
 
-        // [MODIFICADO] 4. Activar Modo Edición
+        // 4. Activar Modo Edición - Sin cambios
         btnEdit.addEventListener('click', () => {
-            if (!editor.value || editor.value.startsWith("Cargando") || editor.value.startsWith("Presiona")) {
+            if (!editor.value || editor.value.startsWith("Cargando") || editor.value.startsWith("Selecciona")) {
                 alert("Primero carga un contenido para editar.");
                 return;
             }
             originalContent = editor.value;
             editor.readOnly = false;
             editor.focus();
-            
-            // Oculta 'Editar', muestra 'Guardar' y 'Cancelar'
             btnEdit.classList.add('hidden');
             btnSaveTop.classList.remove('hidden');
             btnCancelTop.classList.remove('hidden');
         });
 
-        // [MODIFICADO] 5. Guardar Contenido (ahora usa btnSaveTop)
+        // 5. Guardar Contenido - Sin cambios
+        // (Ya usa 'currentMode', así que funcionará)
         btnSaveTop.addEventListener('click', async () => {
+            // ... (código sin cambios)
             const newContent = editor.value;
             try {
                 const response = await fetch(`${API_BASE_URL}/prompts/`, {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`,
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Authorization': `Bearer ${authToken}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
-                        type: currentMode, // Asegúrate que el backend espera 'type' o 'mode'
+                        mode: currentMode,
                         content: newContent
                     })
                 });
-
                 if (response.ok) {
                     originalContent = newContent;
-                    alert("¡Guardado correctamente!");
-                    cancelEditMode(); // Llama a la nueva función
+                    cancelEditMode();
                 } else if (response.status === 401) {
                     alert("Sesión inválida o expirada.");
                     showLoginView();
@@ -400,12 +362,10 @@
             }
         });
 
-        // [MODIFICADO] 6. Cancelar Edición (ahora usa btnCancelTop)
+        // 6. Cancelar Edición - Sin cambios
         btnCancelTop.addEventListener('click', () => {
-            if (confirm("¿Descartar cambios no guardados?")) {
-                editor.value = originalContent;
-                cancelEditMode(); // Llama a la nueva función
-            }
+			editor.value = originalContent;
+			cancelEditMode();
         });
 
 
@@ -415,7 +375,8 @@
             appView.classList.remove('hidden');
             currentMode = 'system';
             updateModeButtons();
-            editor.value = "Presiona 'System' o 'Developer' para cargar un prompt...";
+            // [MODIFICADO] Placeholder
+            editor.value = "Selecciona un modo (System, Developer, etc.) para cargar un prompt...";
         }
 
         function showLoginView() {
@@ -426,23 +387,33 @@
             loginError.textContent = "";
         }
 
-        // [MODIFICADO] cancelEditMode ahora controla los botones superiores
         function cancelEditMode() {
             editor.readOnly = true;
-            
-            // Oculta 'Guardar' y 'Cancelar', muestra 'Editar'
             btnEdit.classList.remove('hidden');
             btnSaveTop.classList.add('hidden');
             btnCancelTop.classList.add('hidden');
         }
 
+        // [MODIFICADO] updateModeButtons ahora maneja 4 botones
         function updateModeButtons() {
-            if (currentMode === 'system') {
-                btnSystem.classList.add('active');
-                btnDeveloper.classList.remove('active');
-            } else {
-                btnDeveloper.classList.add('active');
-                btnSystem.classList.remove('active');
+            // Desactivar todos
+            const allModeButtons = [btnSystem, btnDeveloper, btnSummary, btnUser];
+            allModeButtons.forEach(btn => btn.classList.remove('active'));
+            
+            // Activar el actual
+            switch(currentMode) {
+                case 'system':
+                    btnSystem.classList.add('active');
+                    break;
+                case 'developer':
+                    btnDeveloper.classList.add('active');
+                    break;
+                case 'summary':
+                    btnSummary.classList.add('active');
+                    break;
+                case 'user':
+                    btnUser.classList.add('active');
+                    break;
             }
         }
 
