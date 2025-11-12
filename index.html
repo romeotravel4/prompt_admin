@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editor de Prompts Romeo</title>
+    <title>Romeo Travel</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -189,7 +189,19 @@
 
     <script>
         // --- CONSTANTES Y ESTADO ---
-        const API_BASE_URL = "http://localhost:8000/api"; 
+        function getApiBaseUrl() {
+            const devHosts = ["localhost", "127.0.0.1", "127.0.0.1:5500"]; 
+            
+            if (devHosts.some(host => window.location.hostname.includes(host))) {
+                console.log("Modo: Desarrollo (API Local)");
+                return "http://localhost:8000/api"; 
+            } else {
+                console.log("Modo: Producción (API Pública)");
+                return "http://164.90.132.157:8000/api"; 
+            }
+        }
+
+		const API_BASE_URL = getApiBaseUrl();
         let authToken = localStorage.getItem('authToken');
         let originalContent = "";
         let currentMode = 'system'; // 'system' por defecto
@@ -207,8 +219,8 @@
         // [MODIFICADO] 4 botones de modo
         const btnSystem = document.getElementById('btn-system');
         const btnDeveloper = document.getElementById('btn-developer');
-        const btnSummary = document.getElementById('btn-summary'); // NUEVO
-        const btnUser = document.getElementById('btn-user'); // NUEVO
+        const btnSummary = document.getElementById('btn-summary');
+        const btnUser = document.getElementById('btn-user');
 
         const btnEdit = document.getElementById('btn-edit');
         const btnLogout = document.getElementById('btn-logout');
