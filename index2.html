@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Romeo Prompt Playground</title>
+    
+    <!-- Fuente Popins y FontAwesome para Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- Estilos Globales y Reset (Tailwind-like) --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f7f9fc; /* Fondo claro */
+            color: #333333;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; 
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px; /* Reducido el padding vertical para aprovechar más la pantalla */
+        }
+        .hidden { display: none !important; }
+        
+        /* Contenedor principal para centrar la aplicación y darle altura */
+        #app-container {
+            width: 100%; 
+            max-width: 1400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px; 
+            /* ALTURA AJUSTADA: Ocupa casi todo el alto de la ventana */
+            min-height: calc(100vh - 30px); /* 30px = 2 * 15px de padding del body */
+        }
+        
+		/* --- 1. Vista de Login --- */
+        #login-view { width: 100%; max-width: 400px; }
+        .login-container {
+            background-color: #ffffff; padding: 2.5rem; border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08); text-align: center;
+        }
+        .login-container h2 { margin-bottom: 2rem; font-weight: 600; color: #222; }
+        .input-group { position: relative; margin-bottom: 1.5rem; }
+        .input-group i { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: #a0a0a0; font-size: 0.95rem; }
+        .login-input {
+            width: 100%; padding: 14px 18px 14px 50px; background-color: #f0f0f0;
+            border: none; border-radius: 12px; color: #333; font-size: 1rem;
+            outline: none; transition: background-color 0.3s, box-shadow 0.3s;
+        }
+        .login-input:focus { background-color: #e5e5e5; box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.4); }
+		.btn-login {
+					width: 100%;
+					border: none;
+					border-radius: 12px;
+					padding: 14px 25px;
+					font-size: 1.05rem;
+					font-weight: 600;
+					color: #ffffff;
+					cursor: pointer;
+					
+					/* --- CAMBIOS APLICADOS --- */
+					background-color: #FF8C00; /* Naranja de Romeo */
+					box-shadow: 0 5px 15px rgba(255, 140, 0, 0.4); /* Sombra naranja */
+					
+					transition: all 0.3s ease;
+				}
+        
+        .btn-login:hover {
+            /* Mantenemos el efecto hover, pero con el color naranja */
+            background-color: #e67e00; /* Un naranja un poco más oscuro */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 140, 0, 0.5);
+        }
+        #login-error { color: #D32F2F; margin-top: 1rem; font-size: 0.9rem; min-height: 1.2em; }
+
+        /* --- 2. Vista de la App (Editor) - LAYOUT DE 2 COLUMNAS --- */
+        #app-view { 
+            width: 100%; 
+            display: flex; 
+            flex-direction: column;
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+            border: 1px solid #f0f0f0;
+            padding: 30px; 
+            /* IMPORTANTE: Hacer que ocupe más altura en relación al contenedor */
+            flex-grow: 1;
+            min-height: 80vh; /* Altura mínima para asegurar que se vea grande */
+        }
+        
+        /* Contenedor principal de editor y configuración */
+        .content-wrapper {
+            display: flex;
+            gap: 20px; /* Espacio entre el editor y el panel de configuración */
+            width: 100%;
+            align-items: stretch; /* Asegura que ambas columnas tengan la misma altura */
+            flex-grow: 1; /* Permite que el wrapper crezca con la vista de la app */
+        }
+
+        /* --- CABECERA SUPERIOR (Junta Prompts y Config) --- */
+        .top-header-bar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px; 
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee; 
+        }
+        .header-logo { 
+            height: 40px; 
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #FF8C00;
+            display: flex;
+            align-items: center;
+        }
+        .header-logo img { height: 100%; margin-right: 10px; }
+
+        /* Contenedor de acciones: Modos + Acciones */
+        .action-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap; 
+        }
+        
+        /* Botones de MODO y ACCIÓN */
+        .btn {
+            border: none; border-radius: 8px; padding: 8px 15px; font-size: 0.9rem;
+            font-weight: 500; cursor: pointer; display: flex;
+            align-items: center; transition: all 0.2s ease;
+            white-space: nowrap; 
+        }
+        .btn i { margin-right: 6px; font-size: 1rem; }
+
+        /* Botón de configuración/descarga (Gris claro) - ELIMINADO EL DE ALTERNAR */
+        .btn-config {
+            background-color: #e5e5e5; 
+            color: #666; 
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); 
+        }
+        .btn-config:hover { background-color: #dcdcdc; }
+
+        /* Modo Inactivo */
+        .btn-mode { 
+            background-color: #e5e5e5; 
+            color: #666; 
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); 
+        }
+        .btn-mode i { color: #999; }
+        .btn-mode:hover:not(.active) { background-color: #dcdcdc; }
+
+        /* Modo Activo (Naranja de Romeo) */
+        .btn-mode.active { 
+            background-color: #FF8C00; 
+            color: #ffffff; 
+            font-weight: 600; 
+            box-shadow: 0 2px 8px rgba(255, 140, 0, 0.3); 
+        }
+        .btn-mode.active i { color: #ffffff; }
+
+        /* Botón Editar (Azul) */
+        .btn-edit-mode { 
+            background-color: #5485ED; 
+            color: #ffffff; 
+            box-shadow: 0 2px 8px rgba(84, 133, 237, 0.3); 
+            font-weight: 600;
+        }
+        .btn-edit-mode:hover { background-color: #4a7ae0; transform: translateY(-1px); }
+        .btn-edit-mode:active { transform: translateY(0); }
+        
+        /* Botones de Acción de Edición (Guardar/Cancelar) */
+        .btn-save-top { background-color: #4CAF50; color: #ffffff; box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3); }
+        .btn-save-top:hover { background-color: #45a049; transform: translateY(-1px); }
+        .btn-cancel-top { background-color: #F44336; color: #ffffff; box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3); }
+        .btn-cancel-top:hover { background-color: #e53935; transform: translateY(-1px); }
+        
+        /* Botón Salir */
+        .btn-logout-app { 
+            background-color: #ffffff; 
+            color: #555; 
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05); 
+            border: 1px solid #ddd;
+            width: auto;
+            font-weight: 500;
+        }
+        .btn-logout-app:hover { background-color: #f0f0f0; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
+        .btn-logout-app:active { transform: translateY(0); box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05); }
+
+
+        /* --- 3. Panel de Configuración (Lateral Fijo) --- */
+        #config-panel {
+            flex-shrink: 0; /* Evita que el panel se encoja */
+            width: 300px; /* Ancho fijo para el panel */
+            background-color: #fcfcfc;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            border: 1px solid #e8e8e8;
+            align-self: flex-start; /* Ayuda a que mantenga su posición */
+            /* IMPORTANTE: Permitir que el panel crezca verticalmente */
+            flex-grow: 1; 
+        }
+
+        .config-section {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #eee;
+        }
+        .config-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .config-section h3 {
+            font-size: 1.1rem; 
+            margin-bottom: 15px; 
+            font-weight: 600;
+        }
+        .config-section.ai h3 { color: #FF8C00; }
+        .config-section.management h3 { color: #5485ED; }
+
+        .config-input-group { margin-bottom: 15px; }
+        .config-input-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        .config-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.2s;
+            background-color: #ffffff;
+        }
+        .config-input:focus { border-color: #5485ED; box-shadow: 0 0 0 2px rgba(84, 133, 237, 0.2); } 
+
+        .btn-config-save, .btn-download {
+            width: 100%; margin-top: 5px;
+            font-weight: 600; padding: 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .btn-config-save { background-color: #4CAF50; color: #ffffff; }
+        .btn-config-save:hover { background-color: #45a049; }
+        .btn-download { background-color: #5485ED; color: #ffffff; }
+        .btn-download:hover { background-color: #4a7ae0; }
+
+
+        /* --- 4. Área del Editor --- */
+        .editor-container {
+            flex-grow: 1; 
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            min-height: 500px;
+            background-color: #ffffff; 
+            border-radius: 15px;
+            padding: 15px; 
+            position: relative; 
+            border: 1px solid #e8e8e8;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.02);
+        }
+
+        /* Estilos específicos dentro del contenedor del editor */
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .editor-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        #prompt-editor {
+            flex-grow: 1; /* Esto hace que el textarea ocupe el espacio restante */
+            width: 100%; 
+            background-color: transparent;
+            border: none; color: #333333; font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem; 
+            line-height: 1.6; 
+            resize: none; 
+            outline: none;
+            padding: 5px; 
+        }
+        #prompt-editor[readonly] { color: #666666; cursor: default; background-color: #ffffff; }
+
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            /* En pantallas más pequeñas, el layout principal se convierte en columna */
+            .content-wrapper {
+                flex-direction: column;
+                gap: 30px;
+            }
+            /* El panel de configuración pasa a tener el ancho completo */
+            #config-panel {
+                width: 100%;
+                flex-grow: 0; /* Desactivar flex-grow en móvil para evitar que ocupe espacio innecesario */
+            }
+            #app-view {
+                min-height: auto; /* Dejar que la altura sea automática en móvil */
+            }
+        }
+        @media (max-width: 768px) {
+            .top-header-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .action-group {
+                margin-top: 15px;
+                justify-content: flex-start;
+                width: 100%;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="login-view">
+        <div class="login-container">
+            <img src="./logo.png" alt="Romeo Logo" width="120px" style="margin-bottom: 15px;"">
+            <form id="login-form">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="username" class="login-input" placeholder="Usuario" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" class="login-input" placeholder="Contraseña" required>
+                </div>
+                <button type="submit" class="btn-login" id="login-button">
+                    <i class="fas fa-sign-in-alt" style="margin-right: 8px;"></i>
+                </button>
+                <p id="login-error"></p>
+            </form>
+        </div>
+    </div>
+
+    
+    <div id="app-container" class="hidden">
+        
+        <!-- === CONTENIDO PRINCIPAL (Playground Style) === -->
+        <div id="app-view">
+            
+            <!-- BARRA DE CABECERA SUPERIOR (Solo modos y acciones de alto nivel) -->
+            <div class="top-header-bar">
+                <div class="header-logo">
+                    <!-- Se elimina la imagen de logo para mantener la coherencia si no la tienes o la añades con CSS, 
+                         pero si tienes 'logo.png', puedes descomentar la siguiente línea: -->
+                    <!-- <img src="logo.png" alt="Romeo Logo"> -->
+                    Romeo
+                </div>
+                
+                <div class="action-group">
+                    <!-- Botones de Modo -->
+                    <button class="btn btn-mode" id="btn-system" data-mode="system" title="Prompt System"><i class="fas fa-cog"></i> System</button>
+                    <button class="btn btn-mode" id="btn-developer" data-mode="developer" title="Prompt Developer"><i class="fas fa-code"></i> Developer</button>
+                    <button class="btn btn-mode" id="btn-summary" data-mode="summary" title="Prompt Summary"><i class="fas fa-file-alt"></i> Summary</button>
+                    <button class="btn btn-mode" id="btn-user" data-mode="user" title="Prompt User"><i class="fas fa-user"></i> User</button>
+                    
+                    <!-- Botón de Salir -->
+                    <button class="btn btn-logout-app" id="btn-logout-app" title="Cerrar Sesión">
+                        <i class="fas fa-sign-out-alt"></i> Salir
+                    </button>
+                </div>
+            </div>
+
+            <!-- CONTENEDOR DE DOBLE COLUMNA (EDITOR + CONFIGURACIÓN) -->
+            <div class="content-wrapper">
+                
+                <!-- 1. ÁREA DEL EDITOR (Columna Izquierda, Flexible) -->
+                <div class="editor-container">
+                    
+                    <div class="editor-header">
+                        <!-- Título del modo actual o general del editor -->
+                        <h2 id="current-mode-title" style="font-size: 1.2rem; font-weight: 600;">Prompt Editor: System</h2> 
+
+                        <!-- Botones de Acción de Edición (Localizados aquí para mayor claridad) -->
+                        <div class="editor-actions">
+                            <button class="btn btn-edit-mode" id="btn-edit" title="Editar Prompt"><i class="fas fa-edit"></i> Editar</button>
+                            <button class="btn btn-save-top hidden" id="btn-save-top" title="Guardar Cambios"><i class="fas fa-check"></i> Guardar</button>
+                            <button class="btn btn-cancel-top hidden" id="btn-cancel-top" title="Cancelar Edición"><i class="fas fa-times"></i> Cancelar</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Textarea del editor -->
+                    <textarea id="prompt-editor" spellcheck="false" readonly placeholder="Selecciona un modo para cargar o editar un prompt..."></textarea>
+                </div>
+                
+                <!-- 2. PANEL DE CONFIGURACIÓN (Columna Derecha, Fija) -->
+                <div id="config-panel">
+                    
+                    <!-- Sección de Configuración de IA -->
+                    <div class="config-section ai">
+                        <h3><i class="fas fa-sliders-h" style="margin-right: 5px;"></i> Configuración de IA</h3>
+                        
+                        <div class="config-input-group">
+                            <label for="input-temperature">Temperatura (0.0 a 1.0)</label>
+                            <input type="number" step="0.01" min="0" max="1" id="input-temperature" class="config-input" placeholder="Ej: 0.7">
+                        </div>
+                        
+                        <div class="config-input-group">
+                            <label for="input-top-p">Top-P (0.0 a 1.0)</label>
+                            <input type="number" step="0.01" min="0" max="1" id="input-top-p" class="config-input" placeholder="Ej: 0.9">
+                        </div>
+                        
+                        <div class="config-input-group">
+                            <label for="input-max-tokens">Max Tokens</label>
+                            <input type="number" step="1" min="1" id="input-max-tokens" class="config-input" placeholder="Ej: 2048">
+                        </div>
+
+                        <button class="btn btn-config-save" id="btn-save-config" title="Guardar los parámetros de generación de la IA.">
+                            <i class="fas fa-save"></i> Guardar Config
+                        </button>
+                    </div>
+
+                    <!-- Sección de Gestión de Datos -->
+                    <div class="config-section management">
+                        <h3><i class="fas fa-file-export" style="margin-right: 5px;"></i> Gestión de Respuestas</h3>
+                        <p style="font-size:0.85rem; margin-bottom: 10px; color:#777;">Descarga todas las respuestas generadas.</p>
+                        
+                        <button class="btn btn-download" id="btn-download-csv" title="Exportar datos a CSV">
+                            <i class="fas fa-file-download"></i> Descargar CSV
+                        </button>
+                    </div>
+
+                </div>
+                <!-- FIN PANEL DE CONFIGURACIÓN -->
+
+            </div>
+            <!-- === FIN CONTENEDOR DOBLE COLUMNA === -->
+        
+        </div>
+        <!-- === FIN CONTENEDOR PRINCIPAL === -->
+    </div>
+
+
+    <script>
+        // --- CONSTANTES Y ESTADO ---
+        // Este valor debe ser reemplazado en el entorno de ejecución
+        const API_BASE_URL = "http://localhost:8000/api"; 
+
+        
+        let authToken = localStorage.getItem('authToken');
+        let originalContent = "";
+        let currentMode = 'system';
+        
+        // --- REFERENCIAS AL DOM ---
+        const loginView = document.getElementById('login-view');
+        const appContainer = document.getElementById('app-container'); 
+        const loginForm = document.getElementById('login-form');
+        const loginButton = document.getElementById('login-button');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const loginError = document.getElementById('login-error');
+
+        // Referencias al Playground
+        const btnSystem = document.getElementById('btn-system');
+        const btnDeveloper = document.getElementById('btn-developer');
+        const btnSummary = document.getElementById('btn-summary');
+        const btnUser = document.getElementById('btn-user');
+        const btnEdit = document.getElementById('btn-edit');
+        const editor = document.getElementById('prompt-editor');
+        const btnSaveTop = document.getElementById('btn-save-top');
+        const btnCancelTop = document.getElementById('btn-cancel-top');
+        const currentModeTitle = document.getElementById('current-mode-title');
+        
+        // Referencias al Panel de Configuración (Ahora fijo)
+        const configPanel = document.getElementById('config-panel');
+        const inputTemperature = document.getElementById('input-temperature');
+        const inputTopP = document.getElementById('input-top-p');
+        const inputMaxTokens = document.getElementById('input-max-tokens');
+        const btnSaveConfig = document.getElementById('btn-save-config');
+        const btnDownloadCSV = document.getElementById('btn-download-csv');
+        const btnLogoutApp = document.getElementById('btn-logout-app'); 
+
+
+        // --- LÓGICA DE LA APLICACIÓN ---
+
+        // Función reutilizable para manejar errores de autenticación
+        function handleAuthError(context) {
+            console.error(`Error de autenticación (${context}): Sesión inválida o expirada.`);
+            authToken = null;
+            localStorage.removeItem('authToken');
+            showLoginView();
+        }
+
+        // --- FUNCIONES DEL PANEL DE CONFIGURACIÓN (SIN BOTÓN DE TOGGLE) ---
+        // La lógica de mostrar/ocultar el dropdown se elimina, el panel es fijo.
+        
+        async function loadConfig() {
+            if (!authToken) return;
+            try {
+                const response = await fetch(`${API_BASE_URL}/config`, {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    inputTemperature.value = data.temperature;
+                    inputTopP.value = data.top_p;
+                    inputMaxTokens.value = data.max_tokens;
+                } else if (response.status === 401) {
+                    handleAuthError("Cargando configuración");
+                } else {
+                    console.error("Error al cargar configuración:", response.statusText);
+                }
+            } catch (error) {
+                console.error("Error de red al cargar configuración:", error);
+            }
+        }
+
+        async function saveConfig() {
+            btnSaveConfig.disabled = true;
+            btnSaveConfig.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+
+            const configData = {
+                temperature: parseFloat(inputTemperature.value),
+                top_p: parseFloat(inputTopP.value),
+                max_tokens: parseInt(inputMaxTokens.value)
+            };
+
+            if (isNaN(configData.temperature) || isNaN(configData.top_p) || isNaN(configData.max_tokens)) {
+                console.error("Valores de configuración inválidos. Por favor, introduce valores numéricos válidos.");
+                btnSaveConfig.disabled = false;
+                btnSaveConfig.innerHTML = '<i class="fas fa-save"></i> Guardar Config';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/config`, {
+                    method: 'POST',
+                    headers: { 
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(configData)
+                });
+
+                if (response.ok) {
+                    console.log("¡Configuración guardada correctamente!");
+                    // Mostrar un mensaje temporal de éxito si se desea, por ahora solo log.
+                } else if (response.status === 401) {
+                    handleAuthError("Guardando configuración");
+                } else {
+                    const errorDetails = await response.json().catch(() => ({ message: response.statusText }));
+                    throw new Error(errorDetails.message || response.statusText);
+                }
+            } catch (error) {
+                console.error("Error al guardar configuración:", error);
+                console.log(`Error al guardar configuración: ${error.message}`);
+            } finally {
+                btnSaveConfig.disabled = false;
+                btnSaveConfig.innerHTML = '<i class="fas fa-save"></i> Guardar Config';
+            }
+        }
+
+        async function downloadCSV() {
+            btnDownloadCSV.disabled = true;
+            btnDownloadCSV.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Descargando...';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/responses/export/csv`, {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = `respuestas_romeo_${new Date().toISOString().slice(0, 10)}.csv`; 
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    console.log("Descarga completada.");
+                } else if (response.status === 401) {
+                    handleAuthError("Descargando CSV");
+                } else {
+                    const errorText = await response.text();
+                    throw new Error(`Error en el servidor: ${errorText}`);
+                }
+            } catch (error) {
+                console.error("Error al descargar CSV:", error);
+                console.log(`No se pudo descargar el archivo: ${error.message}`);
+            } finally {
+                btnDownloadCSV.disabled = false;
+                btnDownloadCSV.innerHTML = '<i class="fas fa-file-download"></i> Descargar CSV';
+            }
+        }
+        
+        // --- LÓGICA DE LOGIN/LOGOUT Y VISTAS ---
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            loginError.textContent = "";
+            loginButton.disabled = true;
+            loginButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Conectando...';
+            const username = usernameInput.value;
+            const password = passwordInput.value;
+            const bodyData = new URLSearchParams();
+            bodyData.append('username', username);
+            bodyData.append('password', password);
+            try {
+                const response = await fetch(`${API_BASE_URL}/login/token`, { method: 'POST', body: bodyData });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (!data.access_token) throw new Error("El servidor no devolvió un access_token.");
+                    authToken = data.access_token;
+                    localStorage.setItem('authToken', authToken);
+                    showAppView();
+                } else {
+                    const errorData = await response.json().catch(() => ({ detail: response.statusText }));
+                    throw new Error(errorData.detail || "Usuario o contraseña incorrectos.");
+                }
+            } catch (error) {
+                console.error("Error de login:", error);
+                loginError.textContent = "Error al intentar conectar. Asegúrate de que el servidor esté activo.";
+            } finally {
+                loginButton.disabled = false;
+                loginButton.innerHTML = '<i class="fas fa-sign-in-alt" style="margin-right: 8px;"></i> Acceder';
+            }
+        });
+
+        function handleLogout() {
+            // Usando console.log en lugar de confirm() para evitar bloqueos
+            console.log("Cerrando sesión. Descarte de cambios si existen.");
+            authToken = null;
+            localStorage.removeItem('authToken');
+            editor.value = "";
+            originalContent = "";
+            showLoginView();
+        }
+        
+        // --- FUNCIONES DEL EDITOR ---
+
+        async function loadContent(mode) {
+            if (!authToken) { handleAuthError("Cargando contenido"); return; }
+            editor.value = `Cargando contenido de ${mode}...`;
+            editor.readOnly = true;
+            try {
+                const response = await fetch(`${API_BASE_URL}/prompts/?mode=${mode}`, {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    editor.value = data.content;
+                    originalContent = data.content;
+                } else if (response.status === 401) {
+                    handleAuthError("Cargando contenido");
+                } else {
+                    throw new Error("No se pudo cargar el contenido.");
+                }
+            } catch (error) {
+                console.error("Error al cargar:", error);
+                editor.value = `Error al cargar: ${error.message}`;
+            }
+        }
+
+        btnEdit.addEventListener('click', () => {
+            if (!editor.value || editor.value.startsWith("Cargando") || editor.value.startsWith("Selecciona") || editor.value.startsWith("Error")) {
+                console.log("Primero carga un contenido válido para editar.");
+                return;
+            }
+            originalContent = editor.value;
+            editor.readOnly = false;
+            editor.focus();
+            btnEdit.classList.add('hidden');
+            btnSaveTop.classList.remove('hidden');
+            btnCancelTop.classList.remove('hidden');
+            
+            // Deshabilitar la configuración mientras edita el prompt
+            configPanel.querySelectorAll('input, button').forEach(el => el.disabled = true); 
+        });
+
+        btnSaveTop.addEventListener('click', async () => {
+            const newContent = editor.value;
+            if (newContent === originalContent) {
+                console.log("No hay cambios para guardar.");
+                cancelEditMode();
+                return;
+            }
+            try {
+                const response = await fetch(`${API_BASE_URL}/prompts/`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${authToken}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        type: currentMode,
+                        content: newContent
+                    })
+                });
+                if (response.ok) {
+                    originalContent = newContent;
+                    console.log("¡Prompt guardado correctamente!");
+                    cancelEditMode();
+                } else if (response.status === 401) {
+                    handleAuthError("Guardando prompt");
+                } else {
+                    const errorDetails = await response.json().catch(() => ({ detail: response.statusText }));
+                    throw new Error(errorDetails.detail || response.statusText);
+                }
+            } catch (error) {
+                console.error("Error al guardar:", error);
+                console.log(`Error al guardar prompt: ${error.message}`);
+            }
+        });
+
+        btnCancelTop.addEventListener('click', () => {
+            editor.value = originalContent;
+            console.log("Cambios descartados.");
+            cancelEditMode();
+        });
+        
+        // --- HANDLERS DE EVENTOS ---
+        btnSaveConfig.addEventListener('click', saveConfig);
+        btnDownloadCSV.addEventListener('click', downloadCSV);
+        btnLogoutApp.addEventListener('click', handleLogout); 
+        
+        const modeButtons = [btnSystem, btnDeveloper, btnSummary, btnUser];
+        modeButtons.forEach(btn => {
+            btn.addEventListener('click', async () => { 
+                if (!editor.readOnly && editor.value !== originalContent) {
+                    console.warn("ADVERTENCIA: Hay cambios sin guardar en el prompt actual. Se descartarán.");
+                }
+
+                currentMode = btn.dataset.mode; 
+                updateModeButtons(); 
+                cancelEditMode(); 
+                await loadContent(currentMode); 
+            });
+        });
+
+
+        // --- FUNCIONES DE VISTA Y SETUP ---
+        function showAppView() {
+            loginView.classList.add('hidden');
+            appContainer.classList.remove('hidden'); 
+            currentMode = 'system'; 
+            updateModeButtons();
+            loadConfig(); 
+            loadContent(currentMode); 
+        }
+
+        function showLoginView() {
+            appContainer.classList.add('hidden'); 
+            loginView.classList.remove('hidden');
+            usernameInput.value = "";
+            passwordInput.value = "";
+            loginError.textContent = "";
+        }
+
+        function cancelEditMode() {
+            editor.readOnly = true;
+            btnEdit.classList.remove('hidden');
+            btnSaveTop.classList.add('hidden');
+            btnCancelTop.classList.add('hidden');
+            
+            // Habilitar la configuración al salir de edición
+            configPanel.querySelectorAll('input, button').forEach(el => el.disabled = false); 
+        }
+
+        function updateModeButtons() {
+            modeButtons.forEach(btn => btn.classList.remove('active'));
+            modeButtons.forEach(btn => btn.classList.add('btn-mode'));
+            switch(currentMode) {
+                case 'system': 
+                    btnSystem.classList.add('active'); 
+                    currentModeTitle.textContent = "Prompt Editor: System";
+                    break;
+                case 'developer': 
+                    btnDeveloper.classList.add('active'); 
+                    currentModeTitle.textContent = "Prompt Editor: Developer";
+                    break;
+                case 'summary': 
+                    btnSummary.classList.add('active'); 
+                    currentModeTitle.textContent = "Prompt Editor: Summary";
+                    break;
+                case 'user': 
+                    btnUser.classList.add('active'); 
+                    currentModeTitle.textContent = "Prompt Editor: User";
+                    break;
+            }
+        }
+
+        // Inicialización
+        if (authToken) {
+            showAppView();
+        } else {
+            showLoginView();
+        }
+
+    </script>
+</body>
+</html>
