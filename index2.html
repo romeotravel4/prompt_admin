@@ -473,6 +473,11 @@
         let authToken = localStorage.getItem('authToken');
         let originalContent = "";
         let currentMode = 'system_prompt';
+		let originalConfigState = {
+			temperature: null,
+			top_p: null,
+    		max_tokens: null
+		};
         
         // --- REFERENCIAS AL DOM ---
         const loginView = document.getElementById('login-view');
@@ -518,147 +523,159 @@
         // La lógica de mostrar/ocultar el dropdown se elimina, el panel es fijo.
         
  		 // 1. FUNCIÓN PARA CARGAR LA CONFIGURACIÓN GENERAL (Temperature, Top-P, Max Tokens)
-        async function loadConfig() {
-            if (!authToken) return;
-            
-            // Mapeo de keys de API a elementos del DOM
-            const configKeys = {
-                temperature: inputTemperature,
-                top_p: inputTopP,
-                max_tokens: inputMaxTokens
-            };
-            
-            // Deshabilitar inputs mientras carga
-            [inputTemperature, inputTopP, inputMaxTokens].forEach(input => input.disabled = true);
+       async function loadConfig() {
+			if (!authToken) return;
+			
+			const configKeys = {
+				temperature: inputTemperature,
+				top_p: inputTopP,
+				max_tokens: inputMaxTokens
+			};
+			
+			[inputTemperature, inputTopP, inputMaxTokens].forEach(input => input.disabled = true);
 
-            try {
-                // Generar promesas de fetch para cada parámetro
-                const promises = Object.keys(configKeys).map(async (key) => {
-                    // Endpoint con la clave específica (Ej: temperature)
-                    const endpoint = `${API_BASE_URL}/ai-request-configs?param_key=${key}`;
-                    const response = await fetch(endpoint, {
-                        method: 'GET',
-                        headers: { 'Authorization': `Bearer ${authToken}` }
-                    });
+			try {
+				const promises = Object.keys(configKeys).map(async (key) => {
+					const endpoint = `${API_BASE_URL}/ai-request-configs?param_key=${key}`;
+					const response = await fetch(endpoint, {
+						method: 'GET',
+						headers: { 'Authorization': `Bearer ${authToken}` }
+					});
 
-                    if (response.ok) {
-                        const data = await response.json();
-                        // El valor esperado es param_value
-                        configKeys[key].value = data.param_value;
-                    } else if (response.status === 401) {
-                        throw new Error("AuthError");
-                    } else {
-                        // Si no se encuentra, usar un valor por defecto o dejar el placeholder
-                        console.warn(`No se encontró configuración para ${key}. Usando valor por defecto.`);
-                        configKeys[key].value = ''; // Limpiar si no hay valor
-                    }
-                });
+					if (response.ok) {
+						const data = await response.json();
+						configKeys[key].value = data.param_value;
+						
+						// NUEVO: Guardamos el valor original en nuestro estado
+						// Convertimos a número inmediatamente para facilitar la comparación luego
+						originalConfigState[key] = parseFloat(data.param_value);
+					} else if (response.status === 401) {
+						throw new Error("AuthError");
+					} else {
+						console.warn(`No se encontró configuración para ${key}.`);
+						configKeys[key].value = '';
+						originalConfigState[key] = null;
+					}
+				});
 
-                await Promise.all(promises);
-                
-            } catch (error) {
-                if (error.message === "AuthError") {
-                    handleAuthError("Cargando configuración");
-                } else {
-                    console.error("Error al cargar configuración general:", error);
-                }
-            } finally {
-                // Habilitar inputs de nuevo
-                [inputTemperature, inputTopP, inputMaxTokens].forEach(input => input.disabled = false);
-            }
-        }
+				await Promise.all(promises);
+				
+			} catch (error) {
+				if (error.message === "AuthError") {
+					handleAuthError("Cargando configuración");
+				} else {
+					console.error("Error al cargar configuración general:", error);
+				}
+			} finally {
+				[inputTemperature, inputTopP, inputMaxTokens].forEach(input => input.disabled = false);
+			}
+		}
 
-        async function saveConfig() {
-            btnSaveConfig.disabled = true;
-            btnSaveConfig.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
-       		
-			// Convertir y validar valores
-            const floatTemp = parseFloat(inputTemperature.value);
-            const floatTopP = parseFloat(inputTopP.value);
-            const intMaxTokens = parseInt(inputMaxTokens.value);
+    	async function saveConfig() {
+			btnSaveConfig.disabled = true;
+			btnSaveConfig.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
 
-            let validationMessage = '';
+			// Convertir valores actuales
+			const floatTemp = parseFloat(inputTemperature.value);
+			const floatTopP = parseFloat(inputTopP.value);
+			const intMaxTokens = parseInt(inputMaxTokens.value);
 
-            // 1. Validar que sean números
-            if (isNaN(floatTemp) || isNaN(floatTopP) || isNaN(intMaxTokens)) {
-                validationMessage = "Valores de configuración inválidos. Por favor, introduce valores numéricos válidos.";
-            } 
-            // 2. Validar rangos de Temperatura y Top-P (0.0 a 1.0)
-            else if (floatTemp < 0 || floatTemp > 1) {
-                validationMessage = "La Temperatura debe estar en el rango de 0.0 a 1.0.";
-            } else if (floatTopP < 0 || floatTopP > 1) {
-                validationMessage = "Top-P debe estar en el rango de 0.0 a 1.0.";
-            } 
-            // 3. Validar Max Tokens (mínimo 1)
-            else if (intMaxTokens < 1) { 
-                validationMessage = "Max Tokens debe ser un número entero positivo (mínimo 1).";
-            }
-            
-            if (validationMessage) {
-                console.error("Error de Validación:", validationMessage);
-                btnSaveConfig.disabled = false;
-                btnSaveConfig.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error Config';
-                
-                // Revertir el texto del botón después de un breve periodo para que el usuario pueda reintentar
-                setTimeout(() => {
-                    btnSaveConfig.innerHTML = '<i class="fas fa-save"></i> Guardar Config';
-                }, 2000);
-                
-                return;
-            }
-            
-            // Lista de parámetros a guardar con sus valores
-            const paramsToSave = [
-                { key: 'temperature', value: floatTemp },
-                { key: 'top_p', value: floatTopP },
-                { key: 'max_tokens', value: intMaxTokens }
-            ];
+			let validationMessage = '';
 
-            try {
-                // Enviar cada parámetro con su clave base (Ej: temperature)
-                for (const param of paramsToSave) {
-                    const payload = {
-                        param_key: param.key, 
-                        param_value: param.value.toString() // Guardar como string
-                    };
-                    
-                    const response = await fetch(`${API_BASE_URL}/ai-request-configs/`, { // Endpoint para POST
-                        method: 'POST',
-                        headers: { 
-                            'Authorization': `Bearer ${authToken}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(payload)
-                    });
+			// 1. Validaciones (Igual que antes)
+			if (isNaN(floatTemp) || isNaN(floatTopP) || isNaN(intMaxTokens)) {
+				validationMessage = "Valores inválidos. Introduce números.";
+			} else if (floatTemp < 0 || floatTemp > 1) {
+				validationMessage = "Temperatura debe ser entre 0.0 y 1.0.";
+			} else if (floatTopP < 0 || floatTopP > 1) {
+				validationMessage = "Top-P debe ser entre 0.0 y 1.0.";
+			} else if (intMaxTokens < 1) { 
+				validationMessage = "Max Tokens debe ser mayor a 0.";
+			}
+			
+			if (validationMessage) {
+				console.error("Validación:", validationMessage);
+				// ... lógica de error visual existente ...
+				btnSaveConfig.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error';
+				setTimeout(() => btnSaveConfig.innerHTML = '<i class="fas fa-save"></i> Guardar Config', 2000);
+				btnSaveConfig.disabled = false;
+				return;
+			}
+			
+			// 2. NUEVO: Filtrar solo los parámetros modificados
+			const paramsToSave = [];
 
-                    if (!response.ok) {
-                        if (response.status === 401) throw new Error("AuthError");
-                        const errorDetails = await response.json().catch(() => ({ message: response.statusText }));
-                        throw new Error(`Error al guardar ${param.key}: ${errorDetails.message || response.statusText}`);
-                    }
-                }
-                
-                console.log("¡Configuración guardada correctamente!");
-                
-            } catch (error) {
-                if (error.message === "AuthError") {
-                     handleAuthError("Guardando configuración");
-                } else {
-                    console.error("Error al guardar configuración:", error);
-                    console.log(`Error al guardar configuración: ${error.message}`);
-                }
-            } finally {
-                btnSaveConfig.disabled = false;
-                btnSaveConfig.innerHTML = '<i class="fas fa-save"></i> Guardar Config';
-            }
-        }
+			if (floatTemp !== originalConfigState.temperature) {
+				paramsToSave.push({ key: 'temperature', value: floatTemp });
+			}
+			if (floatTopP !== originalConfigState.top_p) {
+				paramsToSave.push({ key: 'top_p', value: floatTopP });
+			}
+			// Para max_tokens aseguramos comparación de enteros
+			if (intMaxTokens !== parseInt(originalConfigState.max_tokens)) {
+				paramsToSave.push({ key: 'max_tokens', value: intMaxTokens });
+			}
+
+			// 3. Si no hay cambios, avisar y salir
+			if (paramsToSave.length === 0) {
+				console.log("No se detectaron cambios en la configuración.");
+				btnSaveConfig.innerHTML = '<i class="fas fa-check"></i> Sin cambios';
+				setTimeout(() => {
+					btnSaveConfig.disabled = false;
+					btnSaveConfig.innerHTML = '<i class="fas fa-save"></i> Guardar Config';
+				}, 1500);
+				return;
+			}
+
+			try {
+				// Enviar solo los modificados
+				for (const param of paramsToSave) {
+					const payload = {
+						param_key: param.key, 
+						param_value: param.value.toString()
+					};
+					
+					const response = await fetch(`${API_BASE_URL}/ai-request-configs/`, { 
+						method: 'POST',
+						headers: { 
+							'Authorization': `Bearer ${authToken}`,
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify(payload)
+					});
+
+					if (!response.ok) {
+						if (response.status === 401) throw new Error("AuthError");
+						const errorDetails = await response.json().catch(() => ({ message: response.statusText }));
+						throw new Error(`Error en ${param.key}: ${errorDetails.message}`);
+					}
+
+					// IMPORTANTE: Actualizar el estado original con el nuevo valor guardado
+					// para que la próxima vez no se detecte como cambio
+					originalConfigState[param.key] = param.value;
+				}
+				
+				console.log(`Se actualizaron ${paramsToSave.length} parámetros.`);
+				
+			} catch (error) {
+				if (error.message === "AuthError") {
+					handleAuthError("Guardando configuración");
+				} else {
+					console.error("Error al guardar configuración:", error);
+					alert(`Error: ${error.message}`); // Feedback visual simple
+				}
+			} finally {
+				btnSaveConfig.disabled = false;
+				btnSaveConfig.innerHTML = '<i class="fas fa-save"></i> Guardar Config';
+			}
+		}
 
         async function downloadCSV() {
             btnDownloadCSV.disabled = true;
             btnDownloadCSV.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Descargando...';
 
             try {
-                const response = await fetch(`${API_BASE_URL}/responses/export/csv`, {
+                const response = await fetch(`${API_BASE_URL}/interactions/download-csv`, {
                     method: 'GET',
                     headers: { 'Authorization': `Bearer ${authToken}` }
                 });
@@ -669,7 +686,7 @@
                     const a = document.createElement('a');
                     a.style.display = 'none';
                     a.href = url;
-                    a.download = `respuestas_romeo_${new Date().toISOString().slice(0, 10)}.csv`; 
+                    a.download = `responses.csv`; 
                     document.body.appendChild(a);
                     a.click();
                     window.URL.revokeObjectURL(url);
