@@ -715,7 +715,7 @@
             bodyData.append('username', username);
             bodyData.append('password', password);
             try {
-                const response = await fetch(`${API_BASE_URL}/login/token`, { method: 'POST', body: bodyData });
+                const response = await fetch(`${API_BASE_URL}/auth/token`, { method: 'POST', body: bodyData });
                 
                 if (response.ok) {
                     const data = await response.json();
