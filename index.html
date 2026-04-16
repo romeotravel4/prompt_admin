@@ -128,6 +128,43 @@
             align-items: center;
             flex-wrap: wrap; 
         }
+        .header-controls {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .provider-switch {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px;
+            border-radius: 10px;
+            background-color: #f2f5fb;
+            border: 1px solid #e1e7f4;
+        }
+        .btn-provider {
+            background-color: transparent;
+            color: #5673ad;
+            font-weight: 600;
+            border: 1px solid transparent;
+        }
+        .btn-provider:hover {
+            background-color: #e8eefb;
+        }
+        .btn-provider.active.openai {
+            background-color: #FF8C00;
+            color: #ffffff;
+            border-color: #FF8C00;
+            box-shadow: 0 2px 8px rgba(255, 140, 0, 0.3);
+        }
+        .btn-provider.active.gemini {
+            background-color: #5485ED;
+            color: #ffffff;
+            border-color: #5485ED;
+            box-shadow: 0 2px 8px rgba(84, 133, 237, 0.3);
+        }
         
         /* Botones de MODO y ACCIÓN */
         .btn {
@@ -323,8 +360,19 @@
                 flex-direction: column;
                 align-items: flex-start;
             }
+            .header-controls {
+                width: 100%;
+                align-items: stretch;
+                gap: 12px;
+            }
+            .provider-switch {
+                width: 100%;
+            }
+            .provider-switch .btn {
+                flex: 1;
+                justify-content: center;
+            }
             .action-group {
-                margin-top: 15px;
                 justify-content: flex-start;
                 width: 100%;
             }
@@ -366,17 +414,28 @@
                     <img src="logo.png" alt="Romeo Logo">
                 </div>
                 
-                <div class="action-group">
-                    <!-- Botones de Modo -->
-                    <button class="btn btn-mode" id="btn-system" data-mode="system_prompt" title="Prompt System"><i class="fas fa-cog"></i> System</button>
-                    <button class="btn btn-mode" id="btn-developer" data-mode="developer_prompt" title="Prompt Developer"><i class="fas fa-code"></i> Developer</button>
-                    <button class="btn btn-mode" id="btn-summary" data-mode="summary_prompt" title="Prompt Summary"><i class="fas fa-file-alt"></i> Summary</button>
-                    <button class="btn btn-mode" id="btn-user" data-mode="user_prompt" title="Prompt User"><i class="fas fa-user"></i> User</button>
-                    
-                    <!-- Botón de Salir -->
-                    <button class="btn btn-logout-app" id="btn-logout-app" title="Cerrar Sesión">
-                        <i class="fas fa-sign-out-alt"></i> Salir
-                    </button>
+                <div class="header-controls">
+                    <div class="provider-switch">
+                        <button class="btn btn-provider openai active" id="btn-provider-openai" data-provider="openai" title="Configurar OpenAI Chat">
+                            <i class="fas fa-comments"></i> Chat OpenAI
+                        </button>
+                        <button class="btn btn-provider gemini" id="btn-provider-gemini" data-provider="gemini" title="Configurar Gemini Live">
+                            <i class="fas fa-wave-square"></i> Gemini Live
+                        </button>
+                    </div>
+                    <div class="action-group">
+                        <!-- Botones de Modo -->
+                        <button class="btn btn-mode" id="btn-system" data-mode="system_prompt" title="Prompt System"><i class="fas fa-cog"></i> System</button>
+                        <button class="btn btn-mode" id="btn-developer" data-mode="developer_prompt" title="Prompt Developer"><i class="fas fa-code"></i> Developer</button>
+                        <button class="btn btn-mode" id="btn-summary" data-mode="summary_prompt" title="Prompt Summary"><i class="fas fa-file-alt"></i> Summary</button>
+                        <button class="btn btn-mode" id="btn-user" data-mode="user_prompt" title="Prompt User"><i class="fas fa-user"></i> User</button>
+                        <button class="btn btn-mode hidden" id="btn-gemini-system" data-mode="gemini_live_system_instruction" title="System Instruction Gemini Live"><i class="fas fa-cog"></i> System Instruction</button>
+                        
+                        <!-- Botón de Salir -->
+                        <button class="btn btn-logout-app" id="btn-logout-app" title="Cerrar Sesión">
+                            <i class="fas fa-sign-out-alt"></i> Salir
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -408,20 +467,54 @@
                     <!-- Sección de Configuración de IA -->
                     <div class="config-section ai">
                         <h3><i class="fas fa-sliders-h" style="margin-right: 5px;"></i> Configuración de IA</h3>
-                        
-                        <div class="config-input-group">
-                            <label for="input-temperature">Temperatura (0.0 a 1.0)</label>
-                            <input type="number" step="0.01" min="0" max="1" id="input-temperature" class="config-input" placeholder="Ej: 0.7">
+
+                        <div id="config-fields-openai">
+                            <div class="config-input-group">
+                                <label for="input-temperature">Temperatura (0.0 a 1.0)</label>
+                                <input type="number" step="0.01" min="0" max="1" id="input-temperature" class="config-input" placeholder="Ej: 0.7">
+                            </div>
+                            
+                            <div class="config-input-group">
+                                <label for="input-top-p">Top-P (0.0 a 1.0)</label>
+                                <input type="number" step="0.01" min="0" max="1" id="input-top-p" class="config-input" placeholder="Ej: 0.9">
+                            </div>
+                            
+                            <div class="config-input-group">
+                                <label for="input-max-tokens">Max Tokens</label>
+                                <input type="number" step="1" min="1" id="input-max-tokens" class="config-input" placeholder="Ej: 2048">
+                            </div>
                         </div>
-                        
-                        <div class="config-input-group">
-                            <label for="input-top-p">Top-P (0.0 a 1.0)</label>
-                            <input type="number" step="0.01" min="0" max="1" id="input-top-p" class="config-input" placeholder="Ej: 0.9">
-                        </div>
-                        
-                        <div class="config-input-group">
-                            <label for="input-max-tokens">Max Tokens</label>
-                            <input type="number" step="1" min="1" id="input-max-tokens" class="config-input" placeholder="Ej: 2048">
+
+                        <div id="config-fields-gemini" class="hidden">
+                            <div class="config-input-group">
+                                <label for="input-gemini-live-voice">Gemini Live Voice</label>
+                                <input type="text" id="input-gemini-live-voice" class="config-input" placeholder="Ej: voice_name">
+                            </div>
+
+                            <div class="config-input-group">
+                                <label for="input-gemini-live-token-uses">Gemini Live Token Uses</label>
+                                <input type="number" step="1" min="0" id="input-gemini-live-token-uses" class="config-input" placeholder="Ej: 1">
+                            </div>
+
+                            <div class="config-input-group">
+                                <label for="input-gemini-live-token-connect-ttl-seconds">Gemini Live Token Connect TTL (seconds)</label>
+                                <input type="number" step="1" min="0" id="input-gemini-live-token-connect-ttl-seconds" class="config-input" placeholder="Ej: 300">
+                            </div>
+
+                            <div class="config-input-group">
+                                <label for="input-gemini-live-silence-duration-ms">Gemini Live Silence Duration (ms)</label>
+                                <input type="number" step="1" min="0" id="input-gemini-live-silence-duration-ms" class="config-input" placeholder="Ej: 500">
+                            </div>
+
+                            <div class="config-input-group">
+                                <label for="input-gemini-live-prefix-padding-ms">Gemini Live Prefix Padding (ms)</label>
+                                <input type="number" step="1" min="0" id="input-gemini-live-prefix-padding-ms" class="config-input" placeholder="Ej: 200">
+                            </div>
+
+                            <div class="config-input-group">
+                                <label for="input-gemini-live-temperature">Gemini Live Temperature</label>
+                                <input type="number" step="0.01" id="input-gemini-live-temperature" class="config-input" placeholder="Ej: 0.7">
+                            </div>
                         </div>
 
                         <button class="btn btn-config-save" id="btn-save-config" title="Guardar los parámetros de generación de la IA.">
@@ -469,46 +562,118 @@
         
         let authToken = localStorage.getItem('authToken');
         let originalContent = "";
+        let currentProvider = 'openai';
         let currentMode = 'system_prompt';
-		let originalConfigState = {
-			temperature: null,
-			top_p: null,
-    		max_tokens: null
-		};
-        
+
+        const PROVIDER_DEFAULT_MODE = {
+            openai: 'system_prompt',
+            gemini: 'gemini_live_system_instruction'
+        };
+
+        const MODE_TITLES = {
+            system_prompt: "Prompt Editor: System",
+            developer_prompt: "Prompt Editor: Developer",
+            summary_prompt: "Prompt Editor: Summary",
+            user_prompt: "Prompt Editor: User",
+            gemini_live_system_instruction: "Prompt Editor: System Instruction"
+        };
+
         // --- REFERENCIAS AL DOM ---
         const loginView = document.getElementById('login-view');
-        const appContainer = document.getElementById('app-container'); 
+        const appContainer = document.getElementById('app-container');
         const loginForm = document.getElementById('login-form');
         const loginButton = document.getElementById('login-button');
         const usernameInput = document.getElementById('username');
         const passwordInput = document.getElementById('password');
         const loginError = document.getElementById('login-error');
 
-        // Referencias al Playground
+        // Referencias de selector de proveedor y modos
+        const btnProviderOpenAI = document.getElementById('btn-provider-openai');
+        const btnProviderGemini = document.getElementById('btn-provider-gemini');
         const btnSystem = document.getElementById('btn-system');
         const btnDeveloper = document.getElementById('btn-developer');
         const btnSummary = document.getElementById('btn-summary');
         const btnUser = document.getElementById('btn-user');
+        const btnGeminiSystem = document.getElementById('btn-gemini-system');
+
         const btnEdit = document.getElementById('btn-edit');
         const editor = document.getElementById('prompt-editor');
         const btnSaveTop = document.getElementById('btn-save-top');
         const btnCancelTop = document.getElementById('btn-cancel-top');
         const currentModeTitle = document.getElementById('current-mode-title');
-        
-        // Referencias al Panel de Configuración (Ahora fijo)
+
+        // Referencias al panel de configuración
         const configPanel = document.getElementById('config-panel');
+        const configFieldsOpenAI = document.getElementById('config-fields-openai');
+        const configFieldsGemini = document.getElementById('config-fields-gemini');
+
         const inputTemperature = document.getElementById('input-temperature');
         const inputTopP = document.getElementById('input-top-p');
         const inputMaxTokens = document.getElementById('input-max-tokens');
+        const inputGeminiLiveVoice = document.getElementById('input-gemini-live-voice');
+        const inputGeminiLiveTokenUses = document.getElementById('input-gemini-live-token-uses');
+        const inputGeminiLiveTokenConnectTtlSeconds = document.getElementById('input-gemini-live-token-connect-ttl-seconds');
+        const inputGeminiLiveSilenceDurationMs = document.getElementById('input-gemini-live-silence-duration-ms');
+        const inputGeminiLivePrefixPaddingMs = document.getElementById('input-gemini-live-prefix-padding-ms');
+        const inputGeminiLiveTemperature = document.getElementById('input-gemini-live-temperature');
+
         const btnSaveConfig = document.getElementById('btn-save-config');
         const btnDownloadCSV = document.getElementById('btn-download-csv');
-        const btnLogoutApp = document.getElementById('btn-logout-app'); 
+        const btnLogoutApp = document.getElementById('btn-logout-app');
 
+        const openAIModeButtons = [btnSystem, btnDeveloper, btnSummary, btnUser];
+        const allModeButtons = [...openAIModeButtons, btnGeminiSystem];
+        const providerButtons = [btnProviderOpenAI, btnProviderGemini];
+
+        const PROVIDER_CONFIG_FIELDS = {
+            openai: {
+                temperature: { input: inputTemperature, type: 'float', min: 0, max: 1, rangeText: "entre 0.0 y 1.0", label: "Temperatura" },
+                top_p: { input: inputTopP, type: 'float', min: 0, max: 1, rangeText: "entre 0.0 y 1.0", label: "Top-P" },
+                max_tokens: { input: inputMaxTokens, type: 'int', min: 1, rangeText: "mayor a 0", label: "Max Tokens" }
+            },
+            gemini: {
+                gemini_live_voice: { input: inputGeminiLiveVoice, type: 'text', label: "Gemini Live Voice" },
+                gemini_live_token_uses: { input: inputGeminiLiveTokenUses, type: 'int', min: 0, rangeText: "mayor o igual a 0", label: "Gemini Live Token Uses" },
+                gemini_live_token_connect_ttl_seconds: { input: inputGeminiLiveTokenConnectTtlSeconds, type: 'int', min: 0, rangeText: "mayor o igual a 0", label: "Gemini Live Token Connect TTL" },
+                gemini_live_silence_duration_ms: { input: inputGeminiLiveSilenceDurationMs, type: 'int', min: 0, rangeText: "mayor o igual a 0", label: "Gemini Live Silence Duration" },
+                gemini_live_prefix_padding_ms: { input: inputGeminiLivePrefixPaddingMs, type: 'int', min: 0, rangeText: "mayor o igual a 0", label: "Gemini Live Prefix Padding" },
+                gemini_live_temperature: { input: inputGeminiLiveTemperature, type: 'float', label: "Gemini Live Temperature" }
+            }
+        };
+
+        let originalConfigState = {
+            openai: Object.fromEntries(Object.keys(PROVIDER_CONFIG_FIELDS.openai).map(key => [key, null])),
+            gemini: Object.fromEntries(Object.keys(PROVIDER_CONFIG_FIELDS.gemini).map(key => [key, null]))
+        };
+
+        function getProviderModes(provider) {
+            if (provider === 'gemini') return [btnGeminiSystem.dataset.mode];
+            return openAIModeButtons.map(btn => btn.dataset.mode);
+        }
+
+        function normalizeConfigValue(definition, rawValue) {
+            if (definition.type === 'text') {
+                return rawValue == null ? '' : String(rawValue);
+            }
+
+            if (rawValue === null || rawValue === undefined || rawValue === '') {
+                return null;
+            }
+
+            if (definition.type === 'int') {
+                const parsed = parseInt(rawValue, 10);
+                return Number.isNaN(parsed) ? null : parsed;
+            }
+
+            const parsed = parseFloat(rawValue);
+            return Number.isNaN(parsed) ? null : parsed;
+        }
+
+        function hasUnsavedEditorChanges() {
+            return !editor.readOnly && editor.value !== originalContent;
+        }
 
         // --- LÓGICA DE LA APLICACIÓN ---
-
-        // Función reutilizable para manejar errores de autenticación
         function handleAuthError(context) {
             console.error(`Error de autenticación (${context}): Sesión inválida o expirada.`);
             authToken = null;
@@ -516,156 +681,181 @@
             showLoginView();
         }
 
-        // --- FUNCIONES DEL PANEL DE CONFIGURACIÓN (SIN BOTÓN DE TOGGLE) ---
-        // La lógica de mostrar/ocultar el dropdown se elimina, el panel es fijo.
-        
- 		 // 1. FUNCIÓN PARA CARGAR LA CONFIGURACIÓN GENERAL (Temperature, Top-P, Max Tokens)
-       async function loadConfig() {
-			if (!authToken) return;
-			
-			const configKeys = {
-				temperature: inputTemperature,
-				top_p: inputTopP,
-				max_tokens: inputMaxTokens
-			};
-			
-			[inputTemperature, inputTopP, inputMaxTokens].forEach(input => input.disabled = true);
+        function updateProviderButtons() {
+            providerButtons.forEach(btn => btn.classList.remove('active'));
+            if (currentProvider === 'gemini') {
+                btnProviderGemini.classList.add('active');
+            } else {
+                btnProviderOpenAI.classList.add('active');
+            }
+        }
 
-			try {
-				const promises = Object.keys(configKeys).map(async (key) => {
-					const endpoint = `${API_BASE_URL}/ai-request-configs?param_key=${key}`;
-					const response = await fetch(endpoint, {
-						method: 'GET',
-						headers: { 'Authorization': `Bearer ${authToken}` }
-					});
+        function updateProviderUI() {
+            const isOpenAI = currentProvider === 'openai';
 
-					if (response.ok) {
-						const data = await response.json();
-						configKeys[key].value = data.param_value;
-						
-						// NUEVO: Guardamos el valor original en nuestro estado
-						// Convertimos a número inmediatamente para facilitar la comparación luego
-						originalConfigState[key] = parseFloat(data.param_value);
-					} else if (response.status === 401) {
-						throw new Error("AuthError");
-					} else {
-						console.warn(`No se encontró configuración para ${key}.`);
-						configKeys[key].value = '';
-						originalConfigState[key] = null;
-					}
-				});
+            configFieldsOpenAI.classList.toggle('hidden', !isOpenAI);
+            configFieldsGemini.classList.toggle('hidden', isOpenAI);
 
-				await Promise.all(promises);
-				
-			} catch (error) {
-				if (error.message === "AuthError") {
-					handleAuthError("Cargando configuración");
-				} else {
-					console.error("Error al cargar configuración general:", error);
-				}
-			} finally {
-				[inputTemperature, inputTopP, inputMaxTokens].forEach(input => input.disabled = false);
-			}
-		}
+            openAIModeButtons.forEach(btn => btn.classList.toggle('hidden', !isOpenAI));
+            btnGeminiSystem.classList.toggle('hidden', isOpenAI);
 
-    	async function saveConfig() {
-			btnSaveConfig.disabled = true;
-			btnSaveConfig.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+            const availableModes = getProviderModes(currentProvider);
+            if (!availableModes.includes(currentMode)) {
+                currentMode = PROVIDER_DEFAULT_MODE[currentProvider];
+            }
 
-			// Convertir valores actuales
-			const floatTemp = parseFloat(inputTemperature.value);
-			const floatTopP = parseFloat(inputTopP.value);
-			const intMaxTokens = parseInt(inputMaxTokens.value);
+            updateProviderButtons();
+            updateModeButtons();
+        }
 
-			let validationMessage = '';
+        async function switchProvider(provider) {
+            if (provider === currentProvider) return;
 
-			// 1. Validaciones (Igual que antes)
-			if (isNaN(floatTemp) || isNaN(floatTopP) || isNaN(intMaxTokens)) {
-				validationMessage = "Valores inválidos. Introduce números.";
-			} else if (floatTemp < 0 || floatTemp > 1) {
-				validationMessage = "Temperatura debe ser entre 0.0 y 1.0.";
-			} else if (floatTopP < 0 || floatTopP > 1) {
-				validationMessage = "Top-P debe ser entre 0.0 y 1.0.";
-			} else if (intMaxTokens < 1) { 
-				validationMessage = "Max Tokens debe ser mayor a 0.";
-			}
-			
-			if (validationMessage) {
-				console.error("Validación:", validationMessage);
-				// ... lógica de error visual existente ...
-				btnSaveConfig.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error';
-				setTimeout(() => btnSaveConfig.innerHTML = '<i class="fas fa-save"></i> Guardar Config', 2000);
-				btnSaveConfig.disabled = false;
-				return;
-			}
-			
-			// 2. NUEVO: Filtrar solo los parámetros modificados
-			const paramsToSave = [];
+            if (hasUnsavedEditorChanges()) {
+                const warningMessage = "ADVERTENCIA: Hay cambios sin guardar en el prompt actual. Se descartarán al cambiar de plataforma.";
+                console.warn(warningMessage);
+                alert(warningMessage);
+            }
 
-			if (floatTemp !== originalConfigState.temperature) {
-				paramsToSave.push({ key: 'temperature', value: floatTemp });
-			}
-			if (floatTopP !== originalConfigState.top_p) {
-				paramsToSave.push({ key: 'top_p', value: floatTopP });
-			}
-			// Para max_tokens aseguramos comparación de enteros
-			if (intMaxTokens !== parseInt(originalConfigState.max_tokens)) {
-				paramsToSave.push({ key: 'max_tokens', value: intMaxTokens });
-			}
+            currentProvider = provider;
+            currentMode = PROVIDER_DEFAULT_MODE[currentProvider];
+            cancelEditMode();
+            updateProviderUI();
+            await loadConfig();
+            await loadContent(currentMode);
+        }
 
-			// 3. Si no hay cambios, avisar y salir
-			if (paramsToSave.length === 0) {
-				console.log("No se detectaron cambios en la configuración.");
-				btnSaveConfig.innerHTML = '<i class="fas fa-check"></i> Sin cambios';
-				setTimeout(() => {
-					btnSaveConfig.disabled = false;
-					btnSaveConfig.innerHTML = '<i class="fas fa-save"></i> Guardar Config';
-				}, 1500);
-				return;
-			}
+        async function loadConfig() {
+            if (!authToken) return;
 
-			try {
-				// Enviar solo los modificados
-				for (const param of paramsToSave) {
-					const payload = {
-						param_key: param.key, 
-						param_value: param.value.toString()
-					};
-					
-					const response = await fetch(`${API_BASE_URL}/ai-request-configs/`, { 
-						method: 'POST',
-						headers: { 
-							'Authorization': `Bearer ${authToken}`,
-							'Content-Type': 'application/json'
-						},
-						body: JSON.stringify(payload)
-					});
+            const provider = currentProvider;
+            const activeConfig = PROVIDER_CONFIG_FIELDS[provider];
+            const activeInputs = Object.values(activeConfig).map(def => def.input);
+            activeInputs.forEach(input => input.disabled = true);
 
-					if (!response.ok) {
-						if (response.status === 401) throw new Error("AuthError");
-						const errorDetails = await response.json().catch(() => ({ message: response.statusText }));
-						throw new Error(`Error en ${param.key}: ${errorDetails.message}`);
-					}
+            try {
+                const promises = Object.entries(activeConfig).map(async ([key, definition]) => {
+                    const endpoint = `${API_BASE_URL}/ai-request-configs?param_key=${key}`;
+                    const response = await fetch(endpoint, {
+                        method: 'GET',
+                        headers: { 'Authorization': `Bearer ${authToken}` }
+                    });
 
-					// IMPORTANTE: Actualizar el estado original con el nuevo valor guardado
-					// para que la próxima vez no se detecte como cambio
-					originalConfigState[param.key] = param.value;
-				}
-				
-				console.log(`Se actualizaron ${paramsToSave.length} parámetros.`);
-				
-			} catch (error) {
-				if (error.message === "AuthError") {
-					handleAuthError("Guardando configuración");
-				} else {
-					console.error("Error al guardar configuración:", error);
-					alert(`Error: ${error.message}`); // Feedback visual simple
-				}
-			} finally {
-				btnSaveConfig.disabled = false;
-				btnSaveConfig.innerHTML = '<i class="fas fa-save"></i> Guardar Config';
-			}
-		}
+                    if (response.ok) {
+                        const data = await response.json();
+                        const paramValue = data.param_value ?? '';
+                        definition.input.value = paramValue;
+                        originalConfigState[provider][key] = normalizeConfigValue(definition, paramValue);
+                    } else if (response.status === 401) {
+                        throw new Error("AuthError");
+                    } else {
+                        console.warn(`No se encontró configuración para ${key}.`);
+                        definition.input.value = '';
+                        originalConfigState[provider][key] = normalizeConfigValue(definition, '');
+                    }
+                });
+
+                await Promise.all(promises);
+            } catch (error) {
+                if (error.message === "AuthError") {
+                    handleAuthError("Cargando configuración");
+                } else {
+                    console.error("Error al cargar configuración:", error);
+                }
+            } finally {
+                activeInputs.forEach(input => input.disabled = false);
+            }
+        }
+
+        async function saveConfig() {
+            btnSaveConfig.disabled = true;
+            btnSaveConfig.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+
+            const provider = currentProvider;
+            const activeConfig = PROVIDER_CONFIG_FIELDS[provider];
+            const paramsToSave = [];
+            let validationMessage = '';
+
+            for (const [key, definition] of Object.entries(activeConfig)) {
+                const currentValue = normalizeConfigValue(definition, definition.input.value);
+                const originalValue = originalConfigState[provider][key];
+
+                if (currentValue === originalValue) continue;
+
+                if (definition.type !== 'text') {
+                    if (currentValue === null) {
+                        validationMessage = `${definition.label} debe ser numérico.`;
+                        break;
+                    }
+                    if (definition.min !== undefined && currentValue < definition.min) {
+                        validationMessage = `${definition.label} debe ser ${definition.rangeText || `mayor o igual a ${definition.min}`}.`;
+                        break;
+                    }
+                    if (definition.max !== undefined && currentValue > definition.max) {
+                        validationMessage = `${definition.label} debe ser ${definition.rangeText || `menor o igual a ${definition.max}`}.`;
+                        break;
+                    }
+                }
+
+                paramsToSave.push({ key, value: currentValue });
+            }
+
+            if (validationMessage) {
+                console.error("Validación:", validationMessage);
+                btnSaveConfig.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error';
+                setTimeout(() => btnSaveConfig.innerHTML = '<i class="fas fa-save"></i> Guardar Config', 2000);
+                btnSaveConfig.disabled = false;
+                return;
+            }
+
+            if (paramsToSave.length === 0) {
+                console.log("No se detectaron cambios en la configuración.");
+                btnSaveConfig.innerHTML = '<i class="fas fa-check"></i> Sin cambios';
+                setTimeout(() => {
+                    btnSaveConfig.disabled = false;
+                    btnSaveConfig.innerHTML = '<i class="fas fa-save"></i> Guardar Config';
+                }, 1500);
+                return;
+            }
+
+            try {
+                for (const param of paramsToSave) {
+                    const payload = {
+                        param_key: param.key,
+                        param_value: String(param.value)
+                    };
+
+                    const response = await fetch(`${API_BASE_URL}/ai-request-configs/`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${authToken}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        if (response.status === 401) throw new Error("AuthError");
+                        const errorDetails = await response.json().catch(() => ({ message: response.statusText }));
+                        throw new Error(`Error en ${param.key}: ${errorDetails.message}`);
+                    }
+
+                    originalConfigState[provider][param.key] = param.value;
+                }
+
+                console.log(`Se actualizaron ${paramsToSave.length} parámetros para ${provider}.`);
+            } catch (error) {
+                if (error.message === "AuthError") {
+                    handleAuthError("Guardando configuración");
+                } else {
+                    console.error("Error al guardar configuración:", error);
+                    alert(`Error: ${error.message}`);
+                }
+            } finally {
+                btnSaveConfig.disabled = false;
+                btnSaveConfig.innerHTML = '<i class="fas fa-save"></i> Guardar Config';
+            }
+        }
 
         async function downloadCSV() {
             btnDownloadCSV.disabled = true;
@@ -683,7 +873,7 @@
                     const a = document.createElement('a');
                     a.style.display = 'none';
                     a.href = url;
-                    a.download = `responses.csv`; 
+                    a.download = `responses.csv`;
                     document.body.appendChild(a);
                     a.click();
                     window.URL.revokeObjectURL(url);
@@ -702,7 +892,7 @@
                 btnDownloadCSV.innerHTML = '<i class="fas fa-file-download"></i> Descargar CSV';
             }
         }
-        
+
         // --- LÓGICA DE LOGIN/LOGOUT Y VISTAS ---
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -716,7 +906,7 @@
             bodyData.append('password', password);
             try {
                 const response = await fetch(`${API_BASE_URL}/auth/token`, { method: 'POST', body: bodyData });
-                
+
                 if (response.ok) {
                     const data = await response.json();
                     if (!data.access_token) throw new Error("El servidor no devolvió un access_token.");
@@ -737,7 +927,6 @@
         });
 
         function handleLogout() {
-            // Usando console.log en lugar de confirm() para evitar bloqueos
             console.log("Cerrando sesión. Descarte de cambios si existen.");
             authToken = null;
             localStorage.removeItem('authToken');
@@ -745,9 +934,8 @@
             originalContent = "";
             showLoginView();
         }
-        
-        // --- FUNCIONES DEL EDITOR ---
 
+        // --- FUNCIONES DEL EDITOR ---
         async function loadContent(mode) {
             if (!authToken) { handleAuthError("Cargando contenido"); return; }
             editor.value = `Cargando contenido de ${mode}...`;
@@ -783,9 +971,8 @@
             btnEdit.classList.add('hidden');
             btnSaveTop.classList.remove('hidden');
             btnCancelTop.classList.remove('hidden');
-            
-            // Deshabilitar la configuración mientras edita el prompt
-            configPanel.querySelectorAll('input, button').forEach(el => el.disabled = true); 
+
+            configPanel.querySelectorAll('input, button').forEach(el => el.disabled = true);
         });
 
         btnSaveTop.addEventListener('click', async () => {
@@ -799,7 +986,7 @@
                 const response = await fetch(`${API_BASE_URL}/ai-request-configs/`, {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${authToken}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
+                    body: JSON.stringify({
                         param_key: currentMode,
                         param_value: newContent
                     })
@@ -825,43 +1012,54 @@
             console.log("Cambios descartados.");
             cancelEditMode();
         });
-        
+
         // --- HANDLERS DE EVENTOS ---
         btnSaveConfig.addEventListener('click', saveConfig);
         btnDownloadCSV.addEventListener('click', downloadCSV);
-        btnLogoutApp.addEventListener('click', handleLogout); 
-        
-        const modeButtons = [btnSystem, btnDeveloper, btnSummary, btnUser];
-        modeButtons.forEach(btn => {
-            btn.addEventListener('click', async () => { 
-                if (!editor.readOnly && editor.value !== originalContent) {
+        btnLogoutApp.addEventListener('click', handleLogout);
+
+        btnProviderOpenAI.addEventListener('click', async () => {
+            await switchProvider('openai');
+        });
+        btnProviderGemini.addEventListener('click', async () => {
+            await switchProvider('gemini');
+        });
+
+        allModeButtons.forEach(btn => {
+            btn.addEventListener('click', async () => {
+                if (btn.classList.contains('hidden')) return;
+
+                if (hasUnsavedEditorChanges()) {
                     console.warn("ADVERTENCIA: Hay cambios sin guardar en el prompt actual. Se descartarán.");
                 }
 
-                currentMode = btn.dataset.mode; 
-                updateModeButtons(); 
-                cancelEditMode(); 
-                await loadContent(currentMode); 
+                currentMode = btn.dataset.mode;
+                updateModeButtons();
+                cancelEditMode();
+                await loadContent(currentMode);
             });
         });
-
 
         // --- FUNCIONES DE VISTA Y SETUP ---
         function showAppView() {
             loginView.classList.add('hidden');
-            appContainer.classList.remove('hidden'); 
-            currentMode = 'system_prompt'; 
-            updateModeButtons();
-            loadConfig(); 
-            loadContent(currentMode); 
+            appContainer.classList.remove('hidden');
+            currentProvider = 'openai';
+            currentMode = PROVIDER_DEFAULT_MODE[currentProvider];
+            updateProviderUI();
+            loadConfig();
+            loadContent(currentMode);
         }
 
         function showLoginView() {
-            appContainer.classList.add('hidden'); 
+            appContainer.classList.add('hidden');
             loginView.classList.remove('hidden');
             usernameInput.value = "";
             passwordInput.value = "";
             loginError.textContent = "";
+            currentProvider = 'openai';
+            currentMode = PROVIDER_DEFAULT_MODE[currentProvider];
+            updateProviderUI();
         }
 
         function cancelEditMode() {
@@ -869,32 +1067,15 @@
             btnEdit.classList.remove('hidden');
             btnSaveTop.classList.add('hidden');
             btnCancelTop.classList.add('hidden');
-            
-            // Habilitar la configuración al salir de edición
-            configPanel.querySelectorAll('input, button').forEach(el => el.disabled = false); 
+
+            configPanel.querySelectorAll('input, button').forEach(el => el.disabled = false);
         }
 
         function updateModeButtons() {
-            modeButtons.forEach(btn => btn.classList.remove('active'));
-            modeButtons.forEach(btn => btn.classList.add('btn-mode'));
-            switch(currentMode) {
-                case 'system_prompt': 
-                    btnSystem.classList.add('active'); 
-                    currentModeTitle.textContent = "Prompt Editor: System";
-                    break;
-                case 'developer_prompt': 
-                    btnDeveloper.classList.add('active'); 
-                    currentModeTitle.textContent = "Prompt Editor: Developer";
-                    break;
-                case 'summary_prompt': 
-                    btnSummary.classList.add('active'); 
-                    currentModeTitle.textContent = "Prompt Editor: Summary";
-                    break;
-                case 'user_prompt': 
-                    btnUser.classList.add('active'); 
-                    currentModeTitle.textContent = "Prompt Editor: User";
-                    break;
-            }
+            allModeButtons.forEach(btn => btn.classList.remove('active'));
+            const activeButton = allModeButtons.find(btn => btn.dataset.mode === currentMode);
+            if (activeButton) activeButton.classList.add('active');
+            currentModeTitle.textContent = MODE_TITLES[currentMode] || "Prompt Editor";
         }
 
         // Inicialización
