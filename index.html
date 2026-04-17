@@ -510,11 +510,6 @@
                                 <label for="input-gemini-live-prefix-padding-ms">Gemini Live Prefix Padding (ms)</label>
                                 <input type="number" step="1" min="0" id="input-gemini-live-prefix-padding-ms" class="config-input" placeholder="Ej: 200">
                             </div>
-
-                            <div class="config-input-group">
-                                <label for="input-gemini-live-temperature">Gemini Live Temperature</label>
-                                <input type="number" step="0.01" id="input-gemini-live-temperature" class="config-input" placeholder="Ej: 0.7">
-                            </div>
                         </div>
 
                         <button class="btn btn-config-save" id="btn-save-config" title="Guardar los parámetros de generación de la IA.">
@@ -636,8 +631,7 @@
                 gemini_live_token_uses: { input: inputGeminiLiveTokenUses, type: 'int', min: 0, rangeText: "mayor o igual a 0", label: "Gemini Live Token Uses" },
                 gemini_live_token_connect_ttl_seconds: { input: inputGeminiLiveTokenConnectTtlSeconds, type: 'int', min: 0, rangeText: "mayor o igual a 0", label: "Gemini Live Token Connect TTL" },
                 gemini_live_silence_duration_ms: { input: inputGeminiLiveSilenceDurationMs, type: 'int', min: 0, rangeText: "mayor o igual a 0", label: "Gemini Live Silence Duration" },
-                gemini_live_prefix_padding_ms: { input: inputGeminiLivePrefixPaddingMs, type: 'int', min: 0, rangeText: "mayor o igual a 0", label: "Gemini Live Prefix Padding" },
-                gemini_live_temperature: { input: inputGeminiLiveTemperature, type: 'float', label: "Gemini Live Temperature" }
+                gemini_live_prefix_padding_ms: { input: inputGeminiLivePrefixPaddingMs, type: 'int', min: 0, rangeText: "mayor o igual a 0", label: "Gemini Live Prefix Padding" }
             }
         };
 
