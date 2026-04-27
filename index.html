@@ -165,6 +165,12 @@
             border-color: #5485ED;
             box-shadow: 0 2px 8px rgba(84, 133, 237, 0.3);
         }
+        .btn-provider.active.users {
+            background-color: #2f8f83;
+            color: #ffffff;
+            border-color: #2f8f83;
+            box-shadow: 0 2px 8px rgba(47, 143, 131, 0.3);
+        }
         
         /* Botones de MODO y ACCIÓN */
         .btn {
@@ -294,6 +300,157 @@
         .btn-config-save:hover { background-color: #45a049; }
         .btn-download { background-color: #5485ED; color: #ffffff; }
         .btn-download:hover { background-color: #4a7ae0; }
+        .users-management-view {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            background-color: #ffffff;
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid #e8e8e8;
+        }
+        .users-toolbar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .users-create-row {
+            display: flex;
+            gap: 12px;
+            align-items: stretch;
+            flex-wrap: wrap;
+        }
+        .btn-users-action {
+            background-color: #2f8f83;
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(47, 143, 131, 0.25);
+        }
+        .btn-users-action:hover {
+            background-color: #27786e;
+        }
+        .btn-users-action.secondary {
+            background-color: #5485ED;
+            box-shadow: 0 2px 8px rgba(84, 133, 237, 0.25);
+        }
+        .btn-users-action.secondary:hover {
+            background-color: #4a7ae0;
+        }
+        .users-table-container {
+            overflow-x: auto;
+            border: 1px solid #dbe4ef;
+            border-radius: 10px;
+            background-color: #fdfefe;
+        }
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 760px;
+        }
+        .users-table th,
+        .users-table td {
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid #e8edf5;
+            font-size: 0.86rem;
+        }
+        .users-table th {
+            background-color: #f3f7fd;
+            color: #3b4f74;
+            font-weight: 600;
+        }
+        .users-table tr:last-child td {
+            border-bottom: none;
+        }
+        .users-form-panel {
+            max-width: 380px;
+            padding: 14px;
+            border: 1px solid #dde8f8;
+            border-radius: 10px;
+            background-color: #f8fbff;
+        }
+        .users-form-panel .config-input-group {
+            margin-bottom: 10px;
+        }
+        .btn-user-delete {
+            background-color: #f8d7da;
+            color: #8c212f;
+            border: 1px solid #f1b9c1;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s ease;
+        }
+        .btn-user-delete:hover {
+            background-color: #f4c8ce;
+        }
+        .user-delete-disabled {
+            font-size: 0.78rem;
+            color: #7a879a;
+            font-weight: 600;
+        }
+        .users-feedback {
+            flex: 1;
+            min-width: 260px;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #d9e8dd;
+            background-color: #f4fbf5;
+            color: #2f6b38;
+            font-size: 0.84rem;
+        }
+        .users-feedback.error {
+            border-color: #f2d6d6;
+            background-color: #fff5f5;
+            color: #a23232;
+        }
+        .users-feedback.info {
+            border-color: #dbe4ef;
+            background-color: #f5f8fd;
+            color: #324766;
+        }
+        .confirm-modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .confirm-modal {
+            width: min(460px, 92vw);
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 18px;
+            border: 1px solid #e6e6e6;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+        }
+        .confirm-modal h4 {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            color: #2d3f5f;
+        }
+        .confirm-modal p {
+            font-size: 0.9rem;
+            color: #42597c;
+            margin-bottom: 14px;
+        }
+        .confirm-modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+        .btn-confirm-no {
+            background: #e8ecf5;
+            color: #4b5f80;
+        }
+        .btn-confirm-yes {
+            background: #d64545;
+            color: #ffffff;
+        }
 
 
         /* --- 4. Área del Editor --- */
@@ -422,6 +579,9 @@
                         <button class="btn btn-provider gemini" id="btn-provider-gemini" data-provider="gemini" title="Configurar Gemini Live">
                             <i class="fas fa-wave-square"></i> Gemini Live
                         </button>
+                        <button class="btn btn-provider users" id="btn-provider-users" data-provider="users" title="Gestión de Usuarios">
+                            <i class="fas fa-users"></i> Gestión Usuarios
+                        </button>
                     </div>
                     <div class="action-group">
                         <!-- Botones de Modo -->
@@ -440,7 +600,7 @@
             </div>
 
             <!-- CONTENEDOR DE DOBLE COLUMNA (EDITOR + CONFIGURACIÓN) -->
-            <div class="content-wrapper">
+            <div class="content-wrapper" id="playground-view">
                 
                 <!-- 1. ÁREA DEL EDITOR (Columna Izquierda, Flexible) -->
                 <div class="editor-container">
@@ -532,6 +692,61 @@
 
             </div>
             <!-- === FIN CONTENEDOR DOBLE COLUMNA === -->
+
+            <div id="users-management-view" class="users-management-view hidden">
+                <h2 style="font-size:1.2rem; font-weight:600; color:#2f8f83;">Gestión de Usuarios</h2>
+                <div class="users-toolbar">
+                    <button class="btn btn-users-action" id="btn-users-list" title="Listar usuarios">
+                        <i class="fas fa-list"></i> Listar usuarios
+                    </button>
+                    <button class="btn btn-users-action secondary" id="btn-users-create-toggle" title="Crear usuario">
+                        <i class="fas fa-user-plus"></i> Crear usuario
+                    </button>
+                </div>
+
+                <div id="users-create-panel" class="users-create-row hidden">
+                    <div class="users-form-panel">
+                        <form id="create-user-form">
+                            <div class="config-input-group">
+                                <label for="input-new-user-email">Email</label>
+                                <input type="email" id="input-new-user-email" class="config-input" placeholder="usuario@dominio.com" required>
+                            </div>
+                            <button type="submit" class="btn btn-config-save" id="btn-create-user" title="Crear usuario">
+                                <i class="fas fa-user-plus"></i> Crear usuario
+                            </button>
+                        </form>
+                    </div>
+                    <div id="users-feedback" class="users-feedback hidden"></div>
+                </div>
+
+                <div id="users-table-container" class="users-table-container hidden">
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>user_id</th>
+                                <th>email</th>
+                                <th>name</th>
+                                <th>lastname</th>
+                                <th>alias</th>
+                                <th>language</th>
+                                <th>acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="delete-confirm-backdrop" class="confirm-modal-backdrop hidden">
+                <div class="confirm-modal">
+                    <h4>Confirmar eliminación</h4>
+                    <p id="delete-confirm-message"></p>
+                    <div class="confirm-modal-actions">
+                        <button class="btn btn-confirm-no" id="btn-delete-cancel">No</button>
+                        <button class="btn btn-confirm-yes" id="btn-delete-confirm">Sí</button>
+                    </div>
+                </div>
+            </div>
         
         </div>
         <!-- === FIN CONTENEDOR PRINCIPAL === -->
@@ -562,7 +777,8 @@
 
         const PROVIDER_DEFAULT_MODE = {
             openai: 'system_prompt',
-            gemini: 'gemini_live_system_instruction'
+            gemini: 'gemini_live_system_instruction',
+            users: null
         };
 
         const MODE_TITLES = {
@@ -585,6 +801,7 @@
         // Referencias de selector de proveedor y modos
         const btnProviderOpenAI = document.getElementById('btn-provider-openai');
         const btnProviderGemini = document.getElementById('btn-provider-gemini');
+        const btnProviderUsers = document.getElementById('btn-provider-users');
         const btnSystem = document.getElementById('btn-system');
         const btnDeveloper = document.getElementById('btn-developer');
         const btnSummary = document.getElementById('btn-summary');
@@ -598,6 +815,8 @@
         const currentModeTitle = document.getElementById('current-mode-title');
 
         // Referencias al panel de configuración
+        const playgroundView = document.getElementById('playground-view');
+        const usersManagementView = document.getElementById('users-management-view');
         const configPanel = document.getElementById('config-panel');
         const configFieldsOpenAI = document.getElementById('config-fields-openai');
         const configFieldsGemini = document.getElementById('config-fields-gemini');
@@ -614,11 +833,25 @@
 
         const btnSaveConfig = document.getElementById('btn-save-config');
         const btnDownloadCSV = document.getElementById('btn-download-csv');
+        const btnUsersList = document.getElementById('btn-users-list');
+        const btnUsersCreateToggle = document.getElementById('btn-users-create-toggle');
+        const usersCreatePanel = document.getElementById('users-create-panel');
+        const createUserForm = document.getElementById('create-user-form');
+        const inputNewUserEmail = document.getElementById('input-new-user-email');
+        const btnCreateUser = document.getElementById('btn-create-user');
+        const usersTableContainer = document.getElementById('users-table-container');
+        const usersTableBody = document.getElementById('users-table-body');
+        const usersFeedback = document.getElementById('users-feedback');
+        const deleteConfirmBackdrop = document.getElementById('delete-confirm-backdrop');
+        const deleteConfirmMessage = document.getElementById('delete-confirm-message');
+        const btnDeleteCancel = document.getElementById('btn-delete-cancel');
+        const btnDeleteConfirm = document.getElementById('btn-delete-confirm');
         const btnLogoutApp = document.getElementById('btn-logout-app');
+        let resolveDeleteConfirmation = null;
 
         const openAIModeButtons = [btnSystem, btnDeveloper, btnSummary, btnUser];
         const allModeButtons = [...openAIModeButtons, btnGeminiSystem];
-        const providerButtons = [btnProviderOpenAI, btnProviderGemini];
+        const providerButtons = [btnProviderOpenAI, btnProviderGemini, btnProviderUsers];
 
         const PROVIDER_CONFIG_FIELDS = {
             openai: {
@@ -642,6 +875,7 @@
 
         function getProviderModes(provider) {
             if (provider === 'gemini') return [btnGeminiSystem.dataset.mode];
+            if (provider === 'users') return [];
             return openAIModeButtons.map(btn => btn.dataset.mode);
         }
 
@@ -679,27 +913,36 @@
             providerButtons.forEach(btn => btn.classList.remove('active'));
             if (currentProvider === 'gemini') {
                 btnProviderGemini.classList.add('active');
+            } else if (currentProvider === 'users') {
+                btnProviderUsers.classList.add('active');
             } else {
                 btnProviderOpenAI.classList.add('active');
             }
         }
 
         function updateProviderUI() {
+            const isUsers = currentProvider === 'users';
             const isOpenAI = currentProvider === 'openai';
+            const isGemini = currentProvider === 'gemini';
+
+            playgroundView.classList.toggle('hidden', isUsers);
+            usersManagementView.classList.toggle('hidden', !isUsers);
 
             configFieldsOpenAI.classList.toggle('hidden', !isOpenAI);
-            configFieldsGemini.classList.toggle('hidden', isOpenAI);
+            configFieldsGemini.classList.toggle('hidden', !isGemini);
 
-            openAIModeButtons.forEach(btn => btn.classList.toggle('hidden', !isOpenAI));
-            btnGeminiSystem.classList.toggle('hidden', isOpenAI);
+            openAIModeButtons.forEach(btn => btn.classList.toggle('hidden', !isOpenAI || isUsers));
+            btnGeminiSystem.classList.toggle('hidden', !isGemini || isUsers);
 
             const availableModes = getProviderModes(currentProvider);
-            if (!availableModes.includes(currentMode)) {
+            if (!isUsers && !availableModes.includes(currentMode)) {
                 currentMode = PROVIDER_DEFAULT_MODE[currentProvider];
             }
 
             updateProviderButtons();
-            updateModeButtons();
+            if (!isUsers) {
+                updateModeButtons();
+            }
         }
 
         async function switchProvider(provider) {
@@ -715,6 +958,11 @@
             currentMode = PROVIDER_DEFAULT_MODE[currentProvider];
             cancelEditMode();
             updateProviderUI();
+            if (provider === 'users') {
+                clearUsersFeedback();
+                await listUsers();
+                return;
+            }
             await loadConfig();
             await loadContent(currentMode);
         }
@@ -887,6 +1135,200 @@
             }
         }
 
+        function setUsersFeedback(message, type = 'info') {
+            usersFeedback.textContent = message;
+            usersFeedback.classList.remove('hidden', 'error', 'info');
+            if (type === 'error') {
+                usersFeedback.classList.add('error');
+            } else if (type === 'info') {
+                usersFeedback.classList.add('info');
+            }
+        }
+
+        function clearUsersFeedback() {
+            usersFeedback.textContent = '';
+            usersFeedback.classList.add('hidden');
+            usersFeedback.classList.remove('error', 'info');
+        }
+
+        function clearUsersTable() {
+            usersTableBody.innerHTML = '';
+            usersTableContainer.classList.add('hidden');
+        }
+
+        function escapeHtml(value) {
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function renderUsersTable(users) {
+            const rows = users.map(user => {
+                const userId = user?.user_id ?? '';
+                const email = user?.email ?? '';
+                const name = user?.name ?? '';
+                const lastname = user?.lastname ?? '';
+                const alias = user?.alias ?? '';
+                const language = user?.language ?? '';
+                const roleName = user?.role?.name ?? '';
+                const roleId = user?.role?.role_id ?? null;
+                const isAdmin = String(roleName).toLowerCase() === 'admin' || Number(roleId) === 1;
+                const actionsCell = isAdmin
+                    ? '<span class="user-delete-disabled">No permitido</span>'
+                    : `
+                        <button
+                            class="btn-user-delete"
+                            data-user-id="${escapeHtml(userId)}"
+                            data-user-email="${escapeHtml(email)}"
+                            data-user-role="${escapeHtml(roleName)}"
+                            type="button"
+                        >
+                            Eliminar usuario
+                        </button>
+                    `;
+
+                return `
+                    <tr>
+                        <td>${escapeHtml(userId)}</td>
+                        <td>${escapeHtml(email)}</td>
+                        <td>${escapeHtml(name)}</td>
+                        <td>${escapeHtml(lastname)}</td>
+                        <td>${escapeHtml(alias)}</td>
+                        <td>${escapeHtml(language)}</td>
+                        <td>${actionsCell}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            usersTableBody.innerHTML = rows || `
+                <tr>
+                    <td colspan="7">No hay usuarios disponibles.</td>
+                </tr>
+            `;
+            usersTableContainer.classList.remove('hidden');
+        }
+
+        async function listUsers() {
+            btnUsersList.disabled = true;
+            btnUsersList.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cargando...';
+            clearUsersTable();
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/users`, {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (response.ok) {
+                    const users = await response.json();
+                    renderUsersTable(Array.isArray(users) ? users : []);
+                } else if (response.status === 401) {
+                    handleAuthError("Listando usuarios");
+                } else {
+                    const errorText = await response.text();
+                    setUsersFeedback(`Error al listar usuarios (${response.status}): ${errorText || response.statusText}`, 'error');
+                }
+            } catch (error) {
+                setUsersFeedback(`Error de conexión al listar usuarios: ${error.message}`, 'error');
+            } finally {
+                btnUsersList.disabled = false;
+                btnUsersList.innerHTML = '<i class="fas fa-list"></i> Listar usuarios';
+            }
+        }
+
+        async function createUser(event) {
+            event.preventDefault();
+
+            const email = inputNewUserEmail.value.trim();
+            if (!email) {
+                setUsersFeedback("Debes introducir un email válido.", 'error');
+                return;
+            }
+
+            btnCreateUser.disabled = true;
+            btnCreateUser.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creando...';
+
+            const payload = {
+                email,
+                name: "User",
+                lastname: "Beta TestFlight",
+                alias: email,
+                role_id: 2
+            };
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/users`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    const data = await response.json().catch(() => null);
+                    const userIdText = data && data.user_id ? ` (ID ${data.user_id})` : '';
+                    setUsersFeedback(`Usuario creado correctamente${userIdText}.`);
+                    inputNewUserEmail.value = '';
+                    await listUsers();
+                } else if (response.status === 401) {
+                    handleAuthError("Creando usuario");
+                } else {
+                    const errorData = await response.json().catch(() => null);
+                    const detail = errorData?.detail || errorData?.message || response.statusText;
+                    setUsersFeedback(`Error al crear usuario (${response.status}): ${detail}`, 'error');
+                }
+            } catch (error) {
+                setUsersFeedback(`Error de conexión al crear usuario: ${error.message}`, 'error');
+            } finally {
+                btnCreateUser.disabled = false;
+                btnCreateUser.innerHTML = '<i class="fas fa-user-plus"></i> Crear usuario';
+            }
+        }
+
+        function openDeleteConfirm(userEmail) {
+            deleteConfirmMessage.textContent = `Esta seguro que desea eliminar el usuario: ${userEmail}?`;
+            deleteConfirmBackdrop.classList.remove('hidden');
+            return new Promise(resolve => {
+                resolveDeleteConfirmation = resolve;
+            });
+        }
+
+        function closeDeleteConfirm(confirmed) {
+            deleteConfirmBackdrop.classList.add('hidden');
+            if (resolveDeleteConfirmation) {
+                resolveDeleteConfirmation(confirmed);
+                resolveDeleteConfirmation = null;
+            }
+        }
+
+        async function deleteUser(userId, userEmail) {
+            const confirmed = await openDeleteConfirm(userEmail);
+            if (!confirmed) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/users/${encodeURIComponent(userId)}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (response.ok) {
+                    await listUsers();
+                } else if (response.status === 401) {
+                    handleAuthError("Eliminando usuario");
+                } else {
+                    const errorText = await response.text();
+                    alert(`Error al eliminar usuario (${response.status}): ${errorText || response.statusText}`);
+                }
+            } catch (error) {
+                alert(`Error de conexión al eliminar usuario: ${error.message}`);
+            }
+        }
+
         // --- LÓGICA DE LOGIN/LOGOUT Y VISTAS ---
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -1010,6 +1452,33 @@
         // --- HANDLERS DE EVENTOS ---
         btnSaveConfig.addEventListener('click', saveConfig);
         btnDownloadCSV.addEventListener('click', downloadCSV);
+        btnUsersList.addEventListener('click', listUsers);
+        btnUsersCreateToggle.addEventListener('click', () => {
+            const isHidden = usersCreatePanel.classList.contains('hidden');
+            usersCreatePanel.classList.toggle('hidden');
+            if (isHidden) inputNewUserEmail.focus();
+        });
+        usersTableBody.addEventListener('click', async (event) => {
+            const deleteButton = event.target.closest('.btn-user-delete');
+            if (!deleteButton) return;
+
+            const userId = deleteButton.dataset.userId;
+            const userEmail = deleteButton.dataset.userEmail || '';
+            const userRole = String(deleteButton.dataset.userRole || '').toLowerCase();
+            if (!userId) return;
+            if (userRole === 'admin') {
+                setUsersFeedback("No se pueden eliminar cuentas admin.", 'error');
+                return;
+            }
+
+            await deleteUser(userId, userEmail);
+        });
+        btnDeleteCancel.addEventListener('click', () => closeDeleteConfirm(false));
+        btnDeleteConfirm.addEventListener('click', () => closeDeleteConfirm(true));
+        deleteConfirmBackdrop.addEventListener('click', (event) => {
+            if (event.target === deleteConfirmBackdrop) closeDeleteConfirm(false);
+        });
+        createUserForm.addEventListener('submit', createUser);
         btnLogoutApp.addEventListener('click', handleLogout);
 
         btnProviderOpenAI.addEventListener('click', async () => {
@@ -1017,6 +1486,9 @@
         });
         btnProviderGemini.addEventListener('click', async () => {
             await switchProvider('gemini');
+        });
+        btnProviderUsers.addEventListener('click', async () => {
+            await switchProvider('users');
         });
 
         allModeButtons.forEach(btn => {
