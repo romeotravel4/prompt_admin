@@ -1217,7 +1217,7 @@
             clearUsersTable();
 
             try {
-                const response = await fetch(`${API_BASE_URL}/users`, {
+                const response = await fetch(`${API_BASE_URL}/users/`, {
                     method: 'GET',
                     headers: { 'Authorization': `Bearer ${authToken}` }
                 });
